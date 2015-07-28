@@ -1,0 +1,288 @@
+@font-face {
+  font-family: 'proximanova';
+  src: url('../data/fonts/proximanova/ProximaNova-Reg-webfont.woff') format('woff');
+  /* Pretty Modern Browsers */
+  font-weight: 400; }
+
+@font-face {
+  font-family: 'proximanova';
+  src: url('../data/fonts/proximanova/ProximaNova-Light-webfont.woff') format('woff');
+  /* Pretty Modern Browsers */
+  font-weight: 300; }
+
+@font-face {
+  font-family: 'proximanova';
+  src: url('../data/fonts/proximanova/ProximaNova-Bold-webfont.woff') format('woff');
+  /* Pretty Modern Browsers */
+  font-weight: 700; }
+
+
+
+body {
+  padding: 0px;
+  margin: 0px;
+    font-family: 'proximanova';
+/*  font-family: "Courier New", courier, monospace;*/
+  font-weight: 300;
+  color: #000;
+
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  font-family: "Courier New", courier, monospace;
+  font-weight: 300;
+  line-height: 1.10;
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+:-webkit-full-screen {
+    background-color: #222;
+    z-index: 2147483647;
+}
+
+body {
+  background: #222;
+}
+
+body{
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+
+.invisible {
+  display: none;
+}
+
+#toolbar {
+  background-color: rgba(0,0,0,0.4);
+  color: #fff;
+  position: fixed;
+  display: block;
+  z-index: 999;
+  right: 0px;
+  bottom: 0px;
+}
+
+
+#canvas {
+  transform: translate3d(0,0,0) scale(2);
+  transform-origin: top left;
+  transition: transform 1ms ease;
+  padding: 10px;
+  width: 0px;
+  height: 0px;
+  margin: 20px;
+}
+
+
+.container {
+  border: 10px #f00 solid;
+  display:block;
+  box-sizing: content-box;
+  width: 200px;
+}
+
+.section {
+  position: absolute;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border-radius: 1px;
+  width: 200px;
+  color: rgba(255,255,255,0.5);
+  font-size: 10px;
+  border-left: 0px rgba(255,255,255,0.3) solid;
+  border-bottom: 1px rgba(255,255,255,0.3) dotted;
+/*  padding-left: 5px;
+  padding-bottom: 5px;
+  padding-top: 5px;*/
+  text-transform: uppercase;
+  transition: top 500ms ease, left 500ms ease;
+}
+
+.card {
+  visibility: hidden;
+  background-color: #fff;
+  width: 200px;
+  border-radius: 3px;
+  display: block;
+  position: absolute;
+  padding: 10px;
+/*  margin-bottom: 10px;
+  margin-right: 10px;
+*/  
+  box-sizing: border-box;
+  transition: transform 200ms ease, top 200ms ease, left 200ms ease;
+
+  box-shadow: 0px 1px 0px 0px rgba(0,0,0,0.76);
+}
+
+
+.card img {
+  width: 100%;
+  border: 1px solid rgba(0,0,0,0.2);
+  pointer-events: none;
+}
+
+.selected {
+  box-shadow: 0px 0px 0px 3px #333, 0px 0px 0px 5px rgba(255,255,255,0.4);
+  /*transition: none;
+  */z-index: 99;
+}
+
+.card.dragged {
+  opacity: 0.5;
+  transform: translate3d(0,0,0) scale(1.1);
+  transition: transform 100ms ease, top 0s, left 0s;
+  cursor:move;
+}
+
+
+.card:hover {
+/*  transform: translate3d(0,0,0) scale(2.1);
+*/  
+}
+
+
+.card div {
+  margin-bottom: 5px;
+}
+
+.card div:last-child {
+  margin-bottom: 0px;
+}
+
+.card.scene {
+  border-left: 5px #f66 solid;
+}
+
+.card.beat {
+  border-left: 5px #aaa solid;
+  background-color: #ddd;
+}
+
+.beats .beat {
+  border-left: 7px #bbb solid;
+  background-color: #ddd;
+
+  width: 170px;
+  border-radius: 3px;
+  display: block;
+  position: relative;
+  padding: 5px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.beats .beat .title {
+  font-size: 12px;
+  line-height: 14px;
+}
+
+
+
+.card.note {
+  border-left: 5px #88f solid;
+  background-color: #bbf;
+}
+
+.card .image {
+  background-color: #999;
+  height: 100px;
+}
+
+.card .title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.card.beat .title {
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.card.note .title {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 12px;
+}
+
+
+[contenteditable="true"] { 
+  outline: 0px; 
+}
+
+h2 {
+  display: block; /* Fallback for non-webkit */
+  display: -webkit-box;
+  max-width: 400px;
+  height: $font-size*$line-height*$lines-to-show; /* Fallback for non-webkit */
+  margin: 0 auto;
+  font-size: $font-size;
+  line-height: $line-height;
+  -webkit-line-clamp: $lines-to-show;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
+.card .synopsis {
+  font-size: 10px;
+  text-overflow: ellipsis;
+  line-height: 12px;
+  height: 36px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+
+}
+
+
+.card .setting {
+  text-transform: uppercase;
+  font-size: 8px;
+  float: left;
+  font-weight: 400;
+  opacity: 0.5;
+}
+
+.card .time-of-day {
+  text-transform: uppercase;
+  font-size: 8px;
+  float: right;
+  font-weight: 400;
+}
+
+.clear {
+  clear: both;
+  margin-bottom: 0px !important;
+}
+
+
+
+
+

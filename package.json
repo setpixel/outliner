@@ -1,0 +1,17 @@
+{
+  "name": "Movie Color Extractor",
+  "main": "index.html",
+  "window": {
+    "title": "Movie Color Extractor",
+    "toolbar": true,
+    "frame": true,
+    "width": 1350,
+    "height": 800,
+    "position": "center",
+    "min_width": 800,
+    "min_height": 400,
+    "max_width": 8000,
+    "max_height": 8000,
+    "show": true
+  }
+}

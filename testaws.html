@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" media="all" href="css/main.css">
+  </head>
+  <body>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.36.min.js"></script>
+<script type="text/javascript">
+  // See the Configuring section to configure credentials in the SDK
+var creds = new AWS.CognitoIdentityCredentials({
+ IdentityPoolId: 'us-east-1:9ec316d7-d2f7-4b6b-b544-ee508ed63915',
+});
+AWS.config.credentials = creds;
+
+
+  // Configure your region
+  AWS.config.region = 'us-east-1';
+</script>
+
+
+<!-- 
+
+<textarea id="data"></textarea>
+<button id="upload-button">Upload to S3</button>
+<div id="results"></div>
+
+<script type="text/javascript">
+  var bucket = new AWS.S3({params: {Bucket: 'testbucket1234567234'}});
+
+  var textarea = document.getElementById('data');
+  var button = document.getElementById('upload-button');
+  var results = document.getElementById('results');
+  button.addEventListener('click', function() {
+    results.innerHTML = '';
+
+    var params = {Key: 'data.txt', Body: textarea.value};
+    bucket.upload(params, function (err, data) {
+      results.innerHTML = err ? 'ERROR!' : 'SAVED.';
+    });
+  }, false);
+</script>
+ -->
+
+<input type="file" id="file-chooser" /> 
+<button id="upload-button">Upload to S3</button>
+<div id="results"></div>
+
+<script type="text/javascript">
+  var bucket = new AWS.S3({params: {Bucket: 'testbucket1234567234'}});
+
+  var fileChooser = document.getElementById('file-chooser');
+  var button = document.getElementById('upload-button');
+  var results = document.getElementById('results');
+  button.addEventListener('click', function() {
+    var file = fileChooser.files[0];
+    if (file) {
+      results.innerHTML = '';
+
+      var params = {Key: file.name, ContentType: file.type, Body: file};
+      bucket.upload(params, function (err, data) {
+        results.innerHTML = err ? 'ERROR!' : 'UPLOADED.';
+      });
+    } else {
+      results.innerHTML = 'Nothing to upload.';
+    }
+  }, false);
+</script>
+
+  </body>
+</html>

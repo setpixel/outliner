@@ -302,7 +302,7 @@ zoinks!!!
 
 
   $('body').keydown(function(event) {
-    if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && event.metaKey)) {
+    if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && event.metaKey) || (event.keyCode == 187 && event.metaKey) || (event.keyCode == 189 && event.metaKey)) {
       event.preventDefault();
     }
 
@@ -364,6 +364,16 @@ zoinks!!!
             document.documentElement.webkitRequestFullscreen();
           }
           
+        }
+        break;
+      case 187: 
+        if (event.metaKey) {
+          changeScale(1.3);
+        }
+        break;
+      case 189:
+        if (event.metaKey) {
+          changeScale(0.8);
         }
         break;
     }
@@ -698,7 +708,7 @@ zoinks!!!
     $("#canvas").append(displayNodeHTML(node));
     attachEventListenersToNode(node.id);
     reflowScreen();
-    setTimeout(reflowScreen, 3000);
+    setTimeout(reflowScreen, 1500);
     //selectItemByID(node.id);
   }
 

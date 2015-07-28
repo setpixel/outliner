@@ -21,11 +21,8 @@
 body {
   padding: 0px;
   margin: 0px;
-    font-family: 'proximanova';
-/*  font-family: "Courier New", courier, monospace;*/
+  font-family: 'proximanova';
   font-weight: 300;
-  color: #000;
-
 }
 
 h1,
@@ -54,7 +51,9 @@ h6,
 }
 
 body {
-  background: #222;
+  /*background: #222;*/
+  background: linear-gradient(90deg, #0e76bc 0%, #00aeef 100%);
+  background-attachment: fixed;
 }
 
 body{
@@ -87,7 +86,7 @@ body{
 #canvas {
   transform: translate3d(0,0,0) scale(2);
   transform-origin: top left;
-  transition: transform 1ms ease;
+  transition: transform 150ms ease;
   padding: 10px;
   width: 0px;
   height: 0px;
@@ -144,7 +143,7 @@ body{
 }
 
 .selected {
-  box-shadow: 0px 0px 0px 3px #333, 0px 0px 0px 5px rgba(255,255,255,0.4);
+  box-shadow: 0px 0px 0px 3px #0e76bc, 0px 0px 0px 5px rgba(255,255,255,0.4);
   /*transition: none;
   */z-index: 99;
 }

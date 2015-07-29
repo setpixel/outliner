@@ -1,11 +1,38 @@
 /*
-	
-zoinks!!!
-
 
   http://localhost:8000/?id=0B0Pyam8wfFCMMFVjeHVTTGxqbU0/
+  
+  HIGHLEVEL
+    Inspector - hook up
+    FILTERING - add tags, ability to show nodes that have tags
+    UI
+    Printing
+    Save to google drive / import from google drive
+    Presentation view
+    COLLABORATORS
+
+  
 
   TODAYS BUGS:
+    make it so circle bob moves around appropriately
+    //figure out the scroll offset for dragging!!!
+    info view to edit node detail:
+      type
+      title
+      synopsis
+      imageURL
+      setting
+      timeOfDay
+      text
+      time (for timeline)
+      tags [list]
+      actors
+      duration (of node)
+      color
+    //make it so you can edit any text (shift enter)
+    //shift return to toggle between node fields
+    //add padding to the right side of the dom
+    show other collaborators mouse cursors
     //reflow after image loads
     //update the card after updating the image
     //reflow on window resize
@@ -21,10 +48,11 @@ zoinks!!!
 
 
   TODO:
-    make sure auth is a button initiated by a click event 
+    //make sure auth is a button initiated by a click event 
+    MAKE NICER THOUGH
 
-    select node with cursor
-    drag and drop reordering
+    //select node with cursor
+    //drag and drop reordering
     make all fields editable
     arrow keys left and right
 
@@ -42,8 +70,8 @@ zoinks!!!
       enter information
   
     TECH STUFF:
-      google realtime api
-      joystick api
+      //google realtime api
+      joystick api -- reimplement
       
     VIEWS:
       single view mode
@@ -103,9 +131,8 @@ zoinks!!!
   var dragOffset;
   var dragTimeoutID;
 
-
   var init = function() {
-    console.log("Init!");
+    //console.log("Init!");
     // maybe not much to do here. should load externally from the model
   }
 
@@ -126,8 +153,8 @@ zoinks!!!
 
 
     reflowScreen();
-    //setTimeout(reflowScreen, 1000);
-    setTimeout(scaleToFit, 1000);
+    setTimeout(reflowScreen, 200);
+    //setTimeout(scaleToFit, 1000);
     changeScale(1);
   }
 
@@ -138,6 +165,24 @@ zoinks!!!
         var nodes = realtimeModel.outlineNodesAsArray()
         var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.id })[0];
         node.title = $(event.target).text()
+      });
+    
+      $("#" + nodeID + " .synopsis").on("input", function(event) {
+        var nodes = realtimeModel.outlineNodesAsArray()
+        var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.id })[0];
+        node.synopsis = $(event.target).text()
+      });
+
+      $("#" + nodeID + " .setting").on("input", function(event) {
+        var nodes = realtimeModel.outlineNodesAsArray()
+        var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.id })[0];
+        node.setting = $(event.target).text()
+      });
+    
+      $("#" + nodeID + " .time-of-day").on("input", function(event) {
+        var nodes = realtimeModel.outlineNodesAsArray()
+        var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.id })[0];
+        node.timeOfDay = $(event.target).text()
       });
     
       $("#" + nodeID).on("mousedown", function(event) {
@@ -215,7 +260,9 @@ zoinks!!!
         }
         htmlList.push('<div class="title" contenteditable="true" spellcheck="false">' + obj.title + '</div>');
         if (obj.synopsis) {
-          htmlList.push('<div class="synopsis">' + obj.synopsis + '</div>');
+          htmlList.push('<div class="synopsis" contenteditable="true" spellcheck="false">' + obj.synopsis + '</div>');
+        } else {
+          htmlList.push('<div class="synopsis hidden" contenteditable="true" spellcheck="false"></div>');
         }
         htmlList.push('</div>');
         break;
@@ -227,10 +274,14 @@ zoinks!!!
       case "scene":
         htmlList.push('<div class="card scene" id="' + obj.id + '">');
         if (obj.setting) {
-          htmlList.push('<div class="setting">' + obj.setting + '</div>');
+          htmlList.push('<div class="setting" contenteditable="true" spellcheck="false">' + obj.setting + '</div>');
+        } else {
+          htmlList.push('<div class="setting hidden" contenteditable="true" spellcheck="false"></div>');
         }
         if (obj.timeOfDay) {
-          htmlList.push('<div class="time-of-day">' + obj.timeOfDay + '</div>');
+          htmlList.push('<div class="time-of-day" contenteditable="true" spellcheck="false">' + obj.timeOfDay + '</div>');
+        } else {
+          htmlList.push('<div class="time-of-day hidden" contenteditable="true" spellcheck="false"></div>');
         }
         htmlList.push('<div class="clear"></div>');
         if (obj.imageURL) {
@@ -238,7 +289,9 @@ zoinks!!!
         }
         htmlList.push('<div class="title" contenteditable="true" spellcheck="false">' + obj.title + '</div>');
         if (obj.synopsis) {
-          htmlList.push('<div class="synopsis">' + obj.synopsis + '</div>');
+          htmlList.push('<div class="synopsis" contenteditable="true" spellcheck="false">' + obj.synopsis + '</div>');
+        } else {
+          htmlList.push('<div class="synopsis hidden" contenteditable="true" spellcheck="false"></div>');
         }
         htmlList.push('</div>');
         break;
@@ -259,7 +312,7 @@ zoinks!!!
           xCursor += 200+30;
         }
 
-        if ((yCursor+$("#" + nodes[i].id).outerHeight()+10) > (($( window ).height()/scale)-10)) {
+        if ((yCursor+$("#" + nodes[i].id).outerHeight()+20) > (($( window ).height()/scale)-20)) {
           yCursor = 23;
           xCursor += 200+10;          
         }
@@ -270,6 +323,11 @@ zoinks!!!
         yCursor += $("#" + nodes[i].id).outerHeight() + 10;
         $("#" + nodes[i].id).css("visibility", "visible");
       }
+
+      // MAYBE TAKE THIS OUT?
+      $('body').width((xCursor + 200+30)*scale+30);
+
+      $("#right-padding-hack").css("left", xCursor + 200);
 
       return {lastXCursor: xCursor, lastWidth: 200+30};
     //}, 100);
@@ -300,19 +358,70 @@ zoinks!!!
     
   }
 
+  var goToNextField = function() {
+    var fields;
+    var nodes = realtimeModel.outlineNodesAsArray();
 
-  $('body').keydown(function(event) {
-    if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && event.metaKey) || (event.keyCode == 187 && event.metaKey) || (event.keyCode == 189 && event.metaKey)) {
-      event.preventDefault();
+    switch (nodes[selectedItem].type) {
+      case "section": 
+        fields = ["title"];
+        break;
+      case "beat":
+        fields = ["title", "synopsis"];
+        break;
+      case "scene":
+        fields = ["title", "synopsis", "setting", "time-of-day"];
+        break;
+      case "note":
+        fields = ["title"];
+        break;
+    }
+    
+    var currentField = fields.indexOf(document.activeElement.className);
+
+    if ($("#" + nodes[selectedItem].id + " ." + fields[currentField] ).text() === "") {
+      $("#" + nodes[selectedItem].id + " ." + fields[currentField] ).toggleClass("hidden", true)
     }
 
-    console.log( event );
+    var nextField = $("#" + nodes[selectedItem].id + " ." + fields[(currentField+1) % (fields.length)] )
+
+    nextField.toggleClass("hidden", false)
+    var length = nextField.text().length;
+    // nextField[0].selectionStart = length;
+    // nextField[0].selectionEnd = length;
+    var range = document.createRange();
+    range.selectNodeContents(nextField[0])
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    nextField.focus();
+    reflowScreen();
+  }
+
+  var deselectEverything = function() {
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+  }
+
+
+  $('body').keydown(function(event) {
+    //console.log(document.activeElement.nodeName)
+
+    if (document.activeElement.contentEditable === true || document.activeElement.nodeName === "INPUT" || document.activeElement.nodeName === "TEXTAREA") {
+      
+    } else {
+      if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && event.metaKey) || (event.keyCode == 187 && event.metaKey) || (event.keyCode == 189 && event.metaKey)) {
+        event.preventDefault();
+      }
+      console.log(event)
+    }
 
     var nodes = realtimeModel.outlineNodesAsArray()
       // TODO: ADD LEFT ARROW, RIGHT ARROW
       // down arrow
     switch (event.keyCode) {
       case 40: 
+        deselectEverything();
         if (event.metaKey) {
           realtimeModel.move(selectedItem, selectedItem+2);
           selectedItem = selectedItem+1;
@@ -321,9 +430,11 @@ zoinks!!!
           selectedItem++;
           selectItem();
         }
+
         break;
       // up arrow  
       case 38:
+        deselectEverything();
         if (event.metaKey) {
           realtimeModel.move(selectedItem, selectedItem-1);
           selectedItem = selectedItem-1;
@@ -335,11 +446,23 @@ zoinks!!!
         break;
       // enter
       case 13:
-        addRemoteNode(selectedItem);
+        if ((document.activeElement.nodeName == "INPUT") || (document.activeElement.nodeName == "TEXTAREA")) {
+          console.log("im on a input!")
+        } else {
+          if (event.shiftKey) {
+            goToNextField();
+          } else {
+            addRemoteNode(selectedItem);
+          }
+        }
+
+
         break;
       // tab
       case 9:
-        toggleNodeType(selectedItem);
+        if ((document.activeElement.contentEditable != true) && (document.activeElement.nodeName != "INPUT") && (document.activeElement.nodeName != "TEXTAREA")) {
+          toggleNodeType(selectedItem);
+        }
         break;
       // p?
       case 27:
@@ -360,26 +483,39 @@ zoinks!!!
         if (event.metaKey) {
           if (document.webkitIsFullScreen) {
             document.webkitExitFullscreen();
+            setTimeout(scaleToFit, 1000);
           } else {
             document.documentElement.webkitRequestFullscreen();
+            setTimeout(scaleToFit, 1000);
           }
           
         }
         break;
       case 187: 
         if (event.metaKey) {
-          changeScale(1.3);
+          changeScale(1.1);
         }
         break;
       case 189:
         if (event.metaKey) {
-          changeScale(0.8);
+          changeScale(0.9);
+        }
+        break;
+      case 73:
+        if (event.metaKey) {
+          if ($("#inspector").hasClass("hidden")) {
+            $("#inspector").toggleClass("hidden", false);
+          } else {
+            $("#inspector").toggleClass("hidden", true);
+          }
         }
         break;
     }
   });
 
   var scaleToFit = function() {
+    console.log("scale to fit")
+    // this is super hacky, but it tot works!
     var screenWidth = $(window).width();
     scale = 0.1;
     for (var i = 0; i < 100; i++) {
@@ -405,7 +541,6 @@ zoinks!!!
     // go through all nodes, find x,y and width and height
     // is xy on the node? great! stop
     // if not, what is the closest node?
-
     var border = (5*scale);
 
     var nodes = realtimeModel.outlineNodesAsArray()
@@ -429,36 +564,21 @@ zoinks!!!
         }
 
         if (x >= (posX-border) && x <= (posX + width + border) && y >= (posY-border) && y <= (posY + height + border)) {
-          //console.log(i, nodes[i].title)
-
           if (x > (posX+(height/2))) {
             return i + 1
           } else {
             return i;
           }
-
-
-         
         }        
       }
-
-
     }
 
     if (!lastFoundColumnItem) {
       return selectedItem;
     } else {
-      console.log("last found")
       return lastFoundColumnItem;
     }
-
-
-    
-    //return i
-
-    // console.log($(document.elementFromPoint(x, y)).is(".card"));
-  }
-
+  };
 
   var findOrderAt2 = function(x, y, _insertLocation) {
     var yCursor = 0;
@@ -478,62 +598,36 @@ zoinks!!!
       nodes.splice(_insertLocation, 0, item)
     }
 
-
     var lastFoundColumnItem;
 
-
     for (var i = 0; i < nodes.length; i++) {
-
-
 
       if (nodes[i].type == "section" && i !== 0) {
         yCursor = 0;
         xCursor += 200+30;
       }
 
-      if ((yCursor+$("#" + nodes[i].id).outerHeight()+10) > (($( window ).height()/scale)-10)) {
+      if ((yCursor+$("#" + nodes[i].id).outerHeight()+20) > (($( window ).height()/scale)-20)) {
         yCursor = 23;
         xCursor += 200+10;          
       }
-
-
-
-
 
       var posX = xCursor;
       var posY = yCursor;
       var width = 230;
       var height = $("#" + nodes[i].id).outerHeight();
 
-
       if (x >= (posX-border) && x <= (posX + width + border + (22*scale)) && y >= (posY-border) && y <= (posY + height+(100*scale))) {
         lastFoundColumnItem = i;
       }
 
-
-
       if (x >= (posX-border) && x <= (posX + width + border) && y >= (posY-border) && y <= (posY + height + border)) {
-      
-        console.log(nodes[i].title)
         return i;
       }
-
-
       yCursor += $("#" + nodes[i].id).outerHeight() + 10;
-
-
     }
-
     return lastFoundColumnItem;
   };
-
-
-
-
-
-
-
-
 
   var reflowScreenReordered = function(_insertLocation) {
     var yCursor = 0;
@@ -544,103 +638,29 @@ zoinks!!!
     var selectedID = nodes[selectedItem].id;
 
     if (_insertLocation >= 0) {
-
-    var item = nodes.splice(selectedItem, 1)[0]
-
-    nodes.splice(_insertLocation, 0, item)
-
+      var item = nodes.splice(selectedItem, 1)[0]
+      nodes.splice(_insertLocation, 0, item)
     }
 
-
     for (var i = 0; i < nodes.length; i++) {
-
       if (nodes[i].type == "section" && i !== 0) {
         yCursor = 0;
         xCursor += 200+30;
       }
-
-      if ((yCursor+$("#" + nodes[i].id).outerHeight()+10) > (($( window ).height()/scale)-10)) {
+      if ((yCursor+$("#" + nodes[i].id).outerHeight()+20) > (($( window ).height()/scale)-20)) {
         yCursor = 23;
         xCursor += 200+10;          
       }
-
-
- 
       if (nodes[i].id === selectedID) {
-        
-         yCursor += $("#" + nodes[i].id).outerHeight() + 10;
+        yCursor += $("#" + nodes[i].id).outerHeight() + 10;
       } else {
         $("#" + nodes[i].id).css("top", yCursor);
         $("#" + nodes[i].id).css("left", xCursor);
         yCursor += $("#" + nodes[i].id).outerHeight() + 10;
       }
-
-      
-
-
-
     }
   };
 
-
-
-
-
-  $(document).on("mousemove", function(event) {
-
-    //console.log(findOrderAt2(event.pageX, event.pageY))
-    
-
-    if (dragItem) {
-      dragItem.toggleClass( "dragged", true )
-      dragItem.css("top", ((event.pageY-20-dragOffset[1])/scale));
-      dragItem.css("left", ((event.pageX-20-dragOffset[0])/scale));
-      $(".title").blur();
-
-      insertLocation = (findOrderAt2(event.pageX, event.pageY));
-      insertLocation = (findOrderAt2(event.pageX, event.pageY, insertLocation));
-
-      // console.log(selectedItem)
-      // console.log(insertLocation)
-
-      reflowScreenReordered(insertLocation);
-
-    }
-
-    //console.log(event.pageX, event.pageY);
-  });
-
-
-  $(document).on("mouseup", function(event) {
-
-    if (dragItem) {
-      console.log("selected item: " + selectedItem)
-      console.log("insert: " + insertLocation)
-
-      if ((selectedItem !== insertLocation) && insertLocation ) {
-
-
-
-        // issue reorder to model
-        if (selectedItem > insertLocation) {
-          realtimeModel.move(selectedItem, insertLocation);
-        } else {
-          realtimeModel.move(selectedItem, insertLocation + 1);
-        }
-
-        
-      }
-
-      dragItem = null;
-      $('.dragged').toggleClass( "dragged", false );
-
-      reflowScreen();
-
-      insertLocation = null;
-
-    }
-
-  });
 
 
 
@@ -650,48 +670,74 @@ zoinks!!!
     reflowScreen();
   }
 
-
+  // document ready yo.
   $( function() {
 
-    $( window ).resize(function() {
-      reflowScreen();
-      //scaleToFit();
+    $(document).on("mousemove", function(event) {
+      if (dragItem) {
+        var scrollOffsetX = $("#canvas-container").scrollLeft();
+        dragItem.toggleClass( "dragged", true )
+        dragItem.css("top", ((event.pageY-20-dragOffset[1])/scale));
+        dragItem.css("left", ((event.pageX-20-dragOffset[0]+scrollOffsetX)/scale));
+        $(".title").blur();
+        insertLocation = (findOrderAt2(event.pageX+scrollOffsetX, event.pageY));
+        insertLocation = (findOrderAt2(event.pageX+scrollOffsetX, event.pageY, insertLocation));
+        reflowScreenReordered(insertLocation);
+      }
+
+      //circleBob.hoverTowards(event.clientX, event.clientY);
     });
 
+    $(document).on("mousedown", function(event) {
+      //circleBob.flyTowards(event.clientX, event.clientY);
+      circleBob.ping(event.clientX, event.clientY);
+    });
 
-    $('#toolbar').on("mousemove", function(event) {
-      scale = ((event.offsetX+30)/100)*2;
-      $("#canvas").css("transform", "translate3d(0,0,0) scale(" + scale + ")")
+    $(document).on("mouseup", function(event) {
+      if (dragItem) {
+        if ((selectedItem !== insertLocation) && insertLocation ) {
+          // issue reorder to model
+          if (selectedItem > insertLocation) {
+            realtimeModel.move(selectedItem, insertLocation);
+          } else {
+            realtimeModel.move(selectedItem, insertLocation + 1);
+          }
+        }
+        dragItem = null;
+        $('.dragged').toggleClass( "dragged", false );
+        reflowScreen();
+        insertLocation = null;
+      }
+    });
+
+    $( window ).resize(function() {
+      $('#canvas-container').width($(window).width());
+      $('#canvas-container').height($(window).height());
       reflowScreen();
-    })
+    });
+
+    // $('#toolbar').on("mousemove", function(event) {
+    //   scale = ((event.offsetX+30)/100)*2;
+    //   $("#canvas").css("transform", "translate3d(0,0,0) scale(" + scale + ")")
+    //   reflowScreen();
+    // })
+
+    $("html").on("dragover", cancelEvents);
+
+    $("html").on("dragleave", cancelEvents);
+
+    $("html").on("drop", cancelEvents);
+
+    $('#canvas-container').width($(window).width());
+    $('#canvas-container').height($(window).height());
 
 
-      $("html").on("dragover", function(event) {
-          console.log("drag an image file over the node!")
-          event.preventDefault();  
-          event.stopPropagation();
-          $(this).addClass('dragging');
-      });
+  });
 
-      $("html").on("dragleave", function(event) {
-          event.preventDefault();  
-          event.stopPropagation();
-          $(this).removeClass('dragging');
-      });
-
-      $("html").on("drop", function(event) {
-          event.preventDefault();  
-          event.stopPropagation();
-          $(this).removeClass('dragging');
-      });
-
-
-
-
-
-
-  })
-
+  var cancelEvents = function(event) {
+    event.preventDefault();  
+    event.stopPropagation();
+  }
 
   var updateImageURL = function(nodeID, imageURL) {
     var nodes = realtimeModel.outlineNodesAsArray();
@@ -732,11 +778,7 @@ zoinks!!!
     reflowScreen();
   }
 
-
-
-
   var removeRemoteNode = function(index) {
-    console.log("removing a node remotely");
     var outlineNodes = realtimeModel.outlineNodesAsArray();
     $('#' + outlineNodes[index].id).remove();
     realtimeModel.remove(index);
@@ -746,11 +788,6 @@ zoinks!!!
   }
 
   var removeLocalNode = function(nodeid) {
-    console.log("removing local!")
-    
-    console.log(nodeid)
-
-    //var outlineNodes = realtimeModel.outlineNodesAsArray();
     $('#' + nodeid).remove();
     reflowScreen();
     selectItem();
@@ -767,7 +804,6 @@ zoinks!!!
   }
 
   var addLocalNode = function(node) {
-    console.log("adding local!")
     $("#canvas").append(displayNodeHTML(node));
     attachEventListenersToNode(node.id);
     reflowScreen();
@@ -775,10 +811,23 @@ zoinks!!!
   }
 
   var updateLocalTitle = function(node) {
-    console.log("updating local!")
     $("#" + node.id + " .title").text(node.title);
   }
 
+  var updateLocalSynopsis = function(node) {
+    $("#" + node.id + " .synopsis").toggleClass("hidden", false);
+    $("#" + node.id + " .synopsis").text(node.synopsis);
+  }
+
+  var updateLocalSetting = function(node) {
+    $("#" + node.id + " .setting").toggleClass("hidden", false);
+    $("#" + node.id + " .setting").text(node.setting);
+  }
+
+  var updateLocalTimeOfDay = function(node) {
+    $("#" + node.id + " .time-of-day").toggleClass("hidden", false);
+    $("#" + node.id + " .time-of-day").text(node.timeOfDay);
+  }
 
   window.outlinerApp = {
     init: init,
@@ -787,6 +836,9 @@ zoinks!!!
     removeLocalNode: removeLocalNode,
     changeLocalNodeType: changeLocalNodeType,
     updateLocalTitle: updateLocalTitle,
+    updateLocalSynopsis: updateLocalSynopsis,
+    updateLocalSetting: updateLocalSetting,
+    updateLocalTimeOfDay: updateLocalTimeOfDay,
     updateImageURL: updateImageURL,
     reflowScreenReordered: reflowScreenReordered,
     reflow: reflowScreen,

@@ -17,15 +17,106 @@
     <script src="js/realtimeModel.js"></script>
     <script src="js/stats.js"></script>
     <script src="js/awsuploader.js"></script>
+    <script src="js/circlebob.js"></script>
     <script src="js/main.js"></script> 
+    <div id="inspector" class="hidden">
+      <h1>Edit some shit.</h1>
+        <input type="text" name="" placeholder="Title">
+        <textarea name="" placeholder="Synopsis" rows="3"></textarea>
+        <input type="text" name="" placeholder="Image URL">
+        <input type="text" name="" placeholder="Setting">
+        <input type="text" name="" placeholder="Time of day">
+        <textarea name="" placeholder="Full text" rows="5"></textarea>
+        <input type="text" name="" placeholder="Tags">
+
+      type
+      title
+      synopsis
+      imageURL
+      setting
+      timeOfDay
+      text
+      time (for timeline)
+      tags [list]
+      actors
+      duration (of node)
+      color
+
+
+    </div>        
 
     <button id="auth_button" class="invisible">AUTHORIZE ME</button>
 
+
+
+
     <div id="toolbar">
-    i am a toolbar
+      <img src="img/outlinerlogo.png" class="logo">
+
+      <ul>
+        <li>Import</li>
+        <li>Export</li>
+      </ul>
+
+
+
+
+      <ul>
+        <li>Add Node</li>
+        <li>Delete Node</li>
+        <li>Toggle Node</li>
+      </ul>
+
+
+
+      <ul>
+        <li>Outline</li>
+        <li>Timeline</li>
+        <li>Edit list</li>
+        <li>Presentation</li>
+      </ul>
+
+      <ul>
+        <li>Flight</li>
+        <li>Love</li>
+        <li>Comedy</li>
+        <li>Conflict</li>
+        <li>VFX</li>
+      </ul>
+
+      <ul>
+        <li>Inspector</li>
+      </ul>
+
+      <ul>
+        <li>Zoom -</li>
+        <li>Zoom +</li>
+        <li>Fullscreen</li>
+      </ul>
+
+
+
+
     </div>
-    <div id="canvas">
+
+    <div id="circle-bob"></div>
+
+    <div id="stats">
+      Node 3 of 15.<br/>
+      15:12 / 90:13<br/>
+      13 unique locations.<br/>
+      8 tags.<br/>
+
     </div>
+
+    <div id="canvas-container">
+      <div id="canvas">
+        <div id="right-padding-hack"></div>
+      </div>
+    </div>
+
+
+
 
   </body>
 </html>

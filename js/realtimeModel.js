@@ -107,13 +107,11 @@
 
 
   function displayObjectChangedEvent(evt) {
-    console.log("EVENT:");
-    console.log(evt);
-
+    //console.log(evt);
 
     var events = evt.events;
     var eventCount = evt.events.length;
-    console.log(events[0].target)
+
     for (var i = 0; i < eventCount; i++) {
 
       switch (events[i].type) {
@@ -124,24 +122,14 @@
             }
             
           }
-
-          console.log(events[i].target)
-          console.log(events[i].values)
-
           break;
         case "values_removed": 
           for (var i2 = 0; i2 < events[i].values.length; i2++) {
             if (!events[i].isLocal){
-              // console.log("EVENTS");
-              // console.log(events[i].values[i2].id)
               outlinerApp.removeLocalNode(events[i].values[i2].id)
             }
             
           }
-
-          console.log(events[i].target)
-          console.log(events[i].values)
-
           break;
         case "value_changed":
           switch (events[i].property) {
@@ -155,22 +143,36 @@
                 outlinerApp.updateLocalTitle(events[i].target);
               }
               break;
+            case "synopsis":
+              if (!events[i].isLocal){
+                outlinerApp.updateLocalSynopsis(events[i].target);
+              }
+              break;
+            case "setting":
+              if (!events[i].isLocal){
+                outlinerApp.updateLocalSetting(events[i].target);
+              }
+              break;
+            case "timeOfDay":
+              if (!events[i].isLocal){
+                outlinerApp.updateLocalTimeOfDay(events[i].target);
+              }
+              break;
             case "imageURL":
               if (!events[i].isLocal){
                 outlinerApp.refreshNode(events[i].target.id);
               }
               break;
-
           }
           outlinerApp.reflow();
       }
 
 
 
-      console.log('Event type: '  + events[i].type);
-      console.log('Local event: ' + events[i].isLocal);
-      console.log('User ID: '     + events[i].userId);
-      console.log('Session ID: '  + events[i].sessionId);
+      // console.log('Event type: '  + events[i].type);
+      // console.log('Local event: ' + events[i].isLocal);
+      // console.log('User ID: '     + events[i].userId);
+      // console.log('Session ID: '  + events[i].sessionId);
     }
   }
 
@@ -178,28 +180,11 @@
     docModel = doc.getModel();
     docRoot = docModel.getRoot();
 
-
-
-
     var outlineNodes = docRoot.get('outlineNodes');
-
-
 
     docRoot.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, displayObjectChangedEvent);
 
-
-
-
-
-
     outlinerApp.load(outlineNodes);
-
-
-
-    // var collaborativeString = doc.getModel().getRoot().get('demo_string');
-    // wireTextBoxes(collaborativeString);
-
-    //gapi.drive.realtime.debug();
   }
 
   var OutlineNode = function(){};
@@ -240,13 +225,6 @@
     var node = docModel.create('OutlineNode');
     node.title = '';
     node.type = 'beat';
-    // node.synopsis = 'this is a synopsis';
-    // node.setting = 'apartment';
-    // node.timeOfDay = 'night';
-    // node.tags.push('apartment');
-    // node.tags.push('fun');
-    // node.tags.push('excitement');
-
     outlineNodes.insert(index, node);
     return node;
   }

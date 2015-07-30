@@ -19,9 +19,13 @@
   var scaleVel = 0;
   var scaleDamp = 0.9;
 
-  var opacity = 1;
+  var opacity = 0;
 
   var idle = true;
+
+  var looping = false;
+
+  var animReq;
 
   var hoverTowards = function(x, y) {
     destLoc = [x,y];
@@ -35,6 +39,7 @@
   }
 
   var ping = function(x,y) {
+    looping = false;
     scale = 0.4;
     scaleVel = 0.6;
     currentLoc = [x,y];
@@ -42,6 +47,22 @@
     opacity = 1;
     if (idle) {
       window.requestAnimationFrame(mainLoop);
+      $("#circle-bob").show()
+    }
+  }
+
+  var echo = function(x,y) {
+    looping = true;
+    window.cancelAnimationFrame(animReq);
+    scale = 0.2;
+    scaleVel = 0.2;
+    if (x) {
+      currentLoc = [x,y];
+      destLoc = [x,y];     
+    }
+    opacity = 1;
+    if (idle) {
+      animReq = window.requestAnimationFrame(mainLoop);
       $("#circle-bob").show()
     }
   }
@@ -80,15 +101,21 @@
     $("#circle-bob").css("opacity", opacity);
 
     if (opacity > 0.03) {
-      window.requestAnimationFrame(mainLoop);
+      animReq = window.requestAnimationFrame(mainLoop);
     } else {
-      $("#circle-bob").hide()
+      if (looping) {
+        window.cancelAnimationFrame(animReq);
+        echo();
+      } else {
+        $("#circle-bob").hide()
+      }
     }
   } 
 
   window.circleBob = {
     hoverTowards: hoverTowards,
     flyTowards: flyTowards,
+    echo: echo,
     ping: ping
   }
   

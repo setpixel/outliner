@@ -11,8 +11,6 @@
     Presentation view
     COLLABORATORS
 
-  
-
   TODAYS BUGS:
     make it so circle bob moves around appropriately
     //figure out the scroll offset for dragging!!!
@@ -41,11 +39,10 @@
     //button for auth
     //fullscreen
     //scale to fit the screen
+    left and right arrows
     stats display
     add printing capability
     detail view for editing
-
-
 
   TODO:
     //make sure auth is a button initiated by a click event 
@@ -86,7 +83,6 @@
 
     what is the ui to add more metadata to a node?
 
-
     Screensaver mode
 
     collaborator's selected node
@@ -102,8 +98,6 @@
       prints
       excel
       fountain
-      
-
 
   Thoughts: 
     Are beats the most important part of the story? Or scenes?
@@ -111,9 +105,6 @@
     There can be beats in a scene? But can there be beats in a beat?
 
     Do beats have a type? Character or Plot?
-
-
-
 */
 
 //var Outliner = Outliner || {};
@@ -130,6 +121,9 @@
   var dragItem = null;
   var dragOffset;
   var dragTimeoutID;
+
+  var tempInsert;
+  var insertPosition;
 
   var init = function() {
     //console.log("Init!");
@@ -151,10 +145,14 @@
 
 
 
-
     reflowScreen();
     setTimeout(reflowScreen, 200);
     //setTimeout(scaleToFit, 1000);
+    
+    selectedItem = 1;
+    selectItem();
+
+
     changeScale(1);
   }
 
@@ -345,6 +343,11 @@
     var nodes = realtimeModel.outlineNodesAsArray();
     $(".selected").toggleClass("selected", false);
     $("#" + nodes[selectedItem].id).toggleClass( "selected", true );
+
+    var cNode = $("#" + nodes[selectedItem].id);
+    circleBob.ping(cNode.position().left + ((cNode.width()+20)/2)-30+(30*scale), cNode.position().top + (cNode.height()/2)+20)
+
+
     if (nodes[selectedItem].title == "") {
       if ((Date.now()-Number(nodes[selectedItem].id)) < 1000 || forceTimeout) {
         setTimeout(function(){$("#" + nodes[selectedItem].id + " .title").focus();}, 100)
@@ -356,6 +359,7 @@
       $(".title").blur();
     }
     
+    stats.updateStats();
   }
 
   var goToNextField = function() {
@@ -427,7 +431,8 @@
           selectedItem = selectedItem+1;
           reflowScreen();
         } else {
-          selectedItem++;
+          var length = realtimeModel.outlineNodesAsArray().length;
+          selectedItem = Math.min(selectedItem+1, length-1);
           selectItem();
         }
 
@@ -440,7 +445,7 @@
           selectedItem = selectedItem-1;
           reflowScreen();
         } else {
-          selectedItem--;
+          selectedItem = Math.max(selectedItem-1, 0);
           selectItem();
         }
         break;
@@ -652,6 +657,9 @@
         xCursor += 200+10;          
       }
       if (nodes[i].id === selectedID) {
+
+        insertPosition = [xCursor + 120, yCursor + ($("#" + nodes[i].id).outerHeight()/2) + 20]
+
         yCursor += $("#" + nodes[i].id).outerHeight() + 10;
       } else {
         $("#" + nodes[i].id).css("top", yCursor);
@@ -681,11 +689,19 @@
         dragItem.css("left", ((event.pageX-20-dragOffset[0]+scrollOffsetX)/scale));
         $(".title").blur();
         insertLocation = (findOrderAt2(event.pageX+scrollOffsetX, event.pageY));
-        insertLocation = (findOrderAt2(event.pageX+scrollOffsetX, event.pageY, insertLocation));
-        reflowScreenReordered(insertLocation);
-      }
 
-      //circleBob.hoverTowards(event.clientX, event.clientY);
+        insertLocation = (findOrderAt2(event.pageX+scrollOffsetX, event.pageY, insertLocation));
+
+        reflowScreenReordered(insertLocation);
+
+        if (insertLocation !== tempInsert && insertPosition ) {
+          circleBob.echo((insertPosition[0])*scale-scrollOffsetX,insertPosition[1]*scale)
+        } else {
+          
+        }
+        tempInsert = insertLocation;
+
+      }
     });
 
     $(document).on("mousedown", function(event) {
@@ -695,6 +711,7 @@
 
     $(document).on("mouseup", function(event) {
       if (dragItem) {
+        var scrollOffsetX = $("#canvas-container").scrollLeft();
         if ((selectedItem !== insertLocation) && insertLocation ) {
           // issue reorder to model
           if (selectedItem > insertLocation) {
@@ -702,11 +719,18 @@
           } else {
             realtimeModel.move(selectedItem, insertLocation + 1);
           }
+          selectedItem = insertLocation;
         }
         dragItem = null;
         $('.dragged').toggleClass( "dragged", false );
         reflowScreen();
+
+
+        selectItem();
+
         insertLocation = null;
+        //circleBob.ping((insertPosition[0])*scale-scrollOffsetX,insertPosition[1]*scale)
+
       }
     });
 
@@ -764,10 +788,15 @@
     var newType = types[(types.indexOf(nodes[index].type)+1) % (types.length)]
     var node = nodes[index];
     node.type = newType;
-    $("#" + node.id).remove();
+    var prevNode = $("#" + node.id);
+    var tLoc = prevNode.position();
+    circleBob.ping(tLoc.left + (prevNode.width()/2)+30, tLoc.top + (prevNode.height()/2)+40)
+
+    prevNode.remove();
     $("#canvas").append(displayNodeHTML(node));
     attachEventListenersToNode(node.id);
     reflowScreen();
+
     selectItem(true);
   }
 
@@ -844,6 +873,7 @@
     reflow: reflowScreen,
     refreshNode: refreshNode,
     scaleToFit: scaleToFit,
+    getCurrentSelection: function() { return selectedItem; },
     twoplus: function() { return 2+2; }
   };
 

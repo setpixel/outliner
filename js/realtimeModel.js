@@ -84,24 +84,52 @@
     model.getRoot().set('outlineNodes', outlineNodes);
 
     var node = model.create('OutlineNode');
-    node.title = 'this is a beat!';
-    node.type = 'beat';
-
+    node.title = 'This is a section';
+    node.type = 'section';
     var index = outlineNodes.push(node);
     node.order = index;
 
     var node = model.create('OutlineNode');
-    node.title = 'this is a scene!';
+    node.title = 'This is a beat!';
+    node.type = 'beat';
+    var index = outlineNodes.push(node);
+    node.order = index;
+
+    var node = model.create('OutlineNode');
+    node.title = 'This is a scene.';
     node.type = 'scene';
-    node.synopsis = 'this is a synopsis';
-    node.setting = 'apartment';
+    node.synopsis = 'This is a synopsis. You can add synopsis text by pressing command + return.';
+    node.setting = 'INT. APARTMENT';
     node.timeOfDay = 'night';
     node.tags.push('apartment');
     node.tags.push('fun');
     node.tags.push('excitement');
-
     var index = outlineNodes.push(node);
     node.order = index;
+
+    var node = model.create('OutlineNode');
+    node.title = 'You can also have notes!';
+    node.type = 'note';
+    var index = outlineNodes.push(node);
+    node.order = index;
+
+    var node = model.create('OutlineNode');
+    node.type = 'beat';
+    node.title = 'You can add nodes by pressing return.';
+    node.synopsis = 'You can also delete nodes by pressing command + backspace.';
+    var index = outlineNodes.push(node);
+    node.order = index;
+
+    var node = model.create('OutlineNode');
+    node.title = 'Drag an image file on me!';
+    node.type = 'scene';
+    node.synopsis = 'Try it out! Scenes and beats can have images.';
+    node.tags.push('apartment');
+    node.tags.push('fun');
+    node.tags.push('excitement');
+    var index = outlineNodes.push(node);
+    node.order = index;
+
 
   }
 

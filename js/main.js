@@ -413,7 +413,7 @@
     if (document.activeElement.contentEditable === true || document.activeElement.nodeName === "INPUT" || document.activeElement.nodeName === "TEXTAREA") {
       
     } else {
-      if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && (e.metaKey || e.ctrlKey)) || (event.keyCode == 187 && (e.metaKey || e.ctrlKey)) || (event.keyCode == 189 && (e.metaKey || e.ctrlKey))) {
+      if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 187 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 189 && (event.metaKey || event.ctrlKey))) {
         event.preventDefault();
       }
       console.log(event)
@@ -425,7 +425,7 @@
     switch (event.keyCode) {
       case 40: 
         deselectEverything();
-        if ((e.metaKey || e.ctrlKey)) {
+        if ((event.metaKey || event.ctrlKey)) {
           realtimeModel.move(selectedItem, selectedItem+2);
           selectedItem = selectedItem+1;
           reflowScreen();
@@ -439,7 +439,7 @@
       // up arrow  
       case 38:
         deselectEverything();
-        if (e.metaKey || e.ctrlKey) {
+        if (event.metaKey || event.ctrlKey) {
           realtimeModel.move(selectedItem, selectedItem-1);
           selectedItem = selectedItem-1;
           reflowScreen();
@@ -478,13 +478,13 @@
       // backspace
       case 8:
         // the command key needs to be down
-        if (e.metaKey || e.ctrlKey) {
+        if (event.metaKey || event.ctrlKey) {
           removeRemoteNode(selectedItem);
         }
         break;
       // 0 for fullscreen
       case 48:
-        if (e.metaKey || e.ctrlKey) {
+        if (event.metaKey || event.ctrlKey) {
           if (document.webkitIsFullScreen) {
             document.webkitExitFullscreen();
             setTimeout(scaleToFit, 1000);
@@ -496,17 +496,17 @@
         }
         break;
       case 187: 
-        if (e.metaKey || e.ctrlKey) {
+        if (event.metaKey || event.ctrlKey) {
           changeScale(1);
         }
         break;
       case 189:
-        if (e.metaKey || e.ctrlKey) {
+        if (event.metaKey || event.ctrlKey) {
           changeScale(-1);
         }
         break;
       case 73:
-        if (e.metaKey || e.ctrlKey) {
+        if (event.metaKey || event.ctrlKey) {
           if ($("#inspector").hasClass("hidden")) {
             $("#inspector").toggleClass("hidden", false);
           } else {

@@ -2,6 +2,10 @@
 
   http://localhost:8000/?id=0B0Pyam8wfFCMMFVjeHVTTGxqbU0/
   
+http://outliner.setpixel.com/?state=%7B%22ids%22:%5B%220B0Pyam8wfFCMVmFtc2FSemstc28%22%5D,%22action%22:%22open%22,%22userId%22:%22103941991044886680474%22%7D&code=4/K5La8a3YowDy31OhHtZn2OajGWT6GGkQWHGGR8GhiqU#
+
+ https://accounts.google.com/o/oauth2/auth?response_type=code&redirect_uri=https%3A%2F%2Fapp.peardeck.com%2Fauth%2Fgoogle%2Freturn&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.file%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.install&state=%257B%2522sessionId%2522%253A%2522sAYS5cClR-krmMM887RCue3ulxCEpiWW%2522%252C%2522redirectTo%2522%253A%2522%252Feditor%252F%253Fstate%253D%25257B%252522ids%252522%253A%25255B%2525220B0Pyam8wfFCMTE1QbGxfWEUweUE%252522%25255D%252C%252522action%252522%253A%252522open%252522%25257D%2522%252C%2522loginEntryUrl%2522%253A%2522%252Feditor%252F%253Fstate%253D%25257B%252522ids%252522%253A%25255B%2525220B0Pyam8wfFCMTE1QbGxfWEUweUE%252522%25255D%252C%252522action%252522%253A%252522open%252522%25257D%2522%252C%2522metadata%2522%253Anull%257D&client_id=689742286244-mo16gc6huobcldroqh09n8spn036ic82.apps.googleusercontent.com
+  
   HIGHLEVEL
     Inspector - hook up
     FILTERING - add tags, ability to show nodes that have tags

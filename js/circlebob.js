@@ -60,7 +60,7 @@
       currentLoc = [x,y];
       destLoc = [x,y];     
     }
-    opacity = 1;
+    opacity = 0.4;
     if (idle) {
       animReq = window.requestAnimationFrame(mainLoop);
       $("#circle-bob").show()

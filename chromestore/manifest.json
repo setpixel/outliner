@@ -1,27 +1,26 @@
 {
-    "name" : "Outliner",
-    "version" : "0.0.0.1",
-    "manifest_version" : 2,
-    "description" : "Quickly outline creative ideas.",
-    "container" : "GOOGLE_DRIVE",
-    "api_console_project_id" : "25911058412",
-    "gdrive_mime_types": {
-      "http://drive.google.com/intents/opendrivedoc": [
-        {
-          "type": ["outliner/outliner", "application/vnd.google.drive.ext-type.outliner"],
-          "href": "http://outliner.setpixel.com/",
-          "title" : "Open",
-          "disposition" : "window"
-        }
-      ]
-    },
-    "icons": {
-      "128": "icon_128.png"
-    },
-    "app" : {
-      "launch" : {
-      "web_url" : "http://outliner.setpixel.com/"
+  "name" : "Outliner",
+  "version" : "0.0.0.2",
+  "manifest_version" : 2,
+  "description" : "Quickly outline creative ideas.",
+  "container" : ["GOOGLE_DRIVE"],
+  "api_console_project_id" : "25911058412",
+  "gdrive_mime_types": {
+    "http://drive.google.com/intents/opendrivedoc": [
+      {
+        "type": ["application/vnd.google.drive.ext-type.outliner","application/vnd.google.drive.ext-type.otl"],
+        "href": "http://outliner.setpixel.com/",
+        "title" : "Open",
+        "disposition" : "window"
       }
+    ]
+  },
+  "icons": {
+    "128": "icon_128.png"
+  },
+  "app" : {
+    "launch" : {
+    "web_url" : "http://outliner.setpixel.com/"
     }
   }
- 
+}

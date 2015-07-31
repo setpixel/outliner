@@ -1,11 +1,5 @@
 /*
 
-  http://localhost:8000/?id=0B0Pyam8wfFCMMFVjeHVTTGxqbU0/
-  
-http://outliner.setpixel.com/?state=%7B%22ids%22:%5B%220B0Pyam8wfFCMVmFtc2FSemstc28%22%5D,%22action%22:%22open%22,%22userId%22:%22103941991044886680474%22%7D&code=4/K5La8a3YowDy31OhHtZn2OajGWT6GGkQWHGGR8GhiqU#
-
- https://accounts.google.com/o/oauth2/auth?response_type=code&redirect_uri=https%3A%2F%2Fapp.peardeck.com%2Fauth%2Fgoogle%2Freturn&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.file%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.install&state=%257B%2522sessionId%2522%253A%2522sAYS5cClR-krmMM887RCue3ulxCEpiWW%2522%252C%2522redirectTo%2522%253A%2522%252Feditor%252F%253Fstate%253D%25257B%252522ids%252522%253A%25255B%2525220B0Pyam8wfFCMTE1QbGxfWEUweUE%252522%25255D%252C%252522action%252522%253A%252522open%252522%25257D%2522%252C%2522loginEntryUrl%2522%253A%2522%252Feditor%252F%253Fstate%253D%25257B%252522ids%252522%253A%25255B%2525220B0Pyam8wfFCMTE1QbGxfWEUweUE%252522%25255D%252C%252522action%252522%253A%252522open%252522%25257D%2522%252C%2522metadata%2522%253Anull%257D&client_id=689742286244-mo16gc6huobcldroqh09n8spn036ic82.apps.googleusercontent.com
-  
   HIGHLEVEL
     Inspector - hook up
     FILTERING - add tags, ability to show nodes that have tags
@@ -16,7 +10,8 @@ http://outliner.setpixel.com/?state=%7B%22ids%22:%5B%220B0Pyam8wfFCMVmFtc2FSemst
     COLLABORATORS
 
   TODAYS BUGS:
-    make it so circle bob moves around appropriately
+    //fiz scaling bug
+    //make it so circle bob moves around appropriately
     //figure out the scroll offset for dragging!!!
     info view to edit node detail:
       type
@@ -117,7 +112,7 @@ http://outliner.setpixel.com/?state=%7B%22ids%22:%5B%220B0Pyam8wfFCMVmFtc2FSemst
   'use strict';
 
   var nodes;
-  var scale = 1.5;
+  var scale = 1.6;
 
   var selectedItem = 0;
   var insertLocation;
@@ -418,7 +413,7 @@ http://outliner.setpixel.com/?state=%7B%22ids%22:%5B%220B0Pyam8wfFCMVmFtc2FSemst
     if (document.activeElement.contentEditable === true || document.activeElement.nodeName === "INPUT" || document.activeElement.nodeName === "TEXTAREA") {
       
     } else {
-      if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && event.metaKey) || (event.keyCode == 187 && event.metaKey) || (event.keyCode == 189 && event.metaKey)) {
+      if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && (e.metaKey || e.ctrlKey)) || (event.keyCode == 187 && (e.metaKey || e.ctrlKey)) || (event.keyCode == 189 && (e.metaKey || e.ctrlKey))) {
         event.preventDefault();
       }
       console.log(event)
@@ -430,7 +425,7 @@ http://outliner.setpixel.com/?state=%7B%22ids%22:%5B%220B0Pyam8wfFCMVmFtc2FSemst
     switch (event.keyCode) {
       case 40: 
         deselectEverything();
-        if (event.metaKey) {
+        if ((e.metaKey || e.ctrlKey)) {
           realtimeModel.move(selectedItem, selectedItem+2);
           selectedItem = selectedItem+1;
           reflowScreen();
@@ -444,7 +439,7 @@ http://outliner.setpixel.com/?state=%7B%22ids%22:%5B%220B0Pyam8wfFCMVmFtc2FSemst
       // up arrow  
       case 38:
         deselectEverything();
-        if (event.metaKey) {
+        if (e.metaKey || e.ctrlKey) {
           realtimeModel.move(selectedItem, selectedItem-1);
           selectedItem = selectedItem-1;
           reflowScreen();
@@ -483,13 +478,13 @@ http://outliner.setpixel.com/?state=%7B%22ids%22:%5B%220B0Pyam8wfFCMVmFtc2FSemst
       // backspace
       case 8:
         // the command key needs to be down
-        if (event.metaKey) {
+        if (e.metaKey || e.ctrlKey) {
           removeRemoteNode(selectedItem);
         }
         break;
       // 0 for fullscreen
       case 48:
-        if (event.metaKey) {
+        if (e.metaKey || e.ctrlKey) {
           if (document.webkitIsFullScreen) {
             document.webkitExitFullscreen();
             setTimeout(scaleToFit, 1000);
@@ -501,17 +496,17 @@ http://outliner.setpixel.com/?state=%7B%22ids%22:%5B%220B0Pyam8wfFCMVmFtc2FSemst
         }
         break;
       case 187: 
-        if (event.metaKey) {
-          changeScale(1.1);
+        if (e.metaKey || e.ctrlKey) {
+          changeScale(1);
         }
         break;
       case 189:
-        if (event.metaKey) {
-          changeScale(0.9);
+        if (e.metaKey || e.ctrlKey) {
+          changeScale(-1);
         }
         break;
       case 73:
-        if (event.metaKey) {
+        if (e.metaKey || e.ctrlKey) {
           if ($("#inspector").hasClass("hidden")) {
             $("#inspector").toggleClass("hidden", false);
           } else {
@@ -673,11 +668,28 @@ http://outliner.setpixel.com/?state=%7B%22ids%22:%5B%220B0Pyam8wfFCMVmFtc2FSemst
     }
   };
 
-
-
-
   var changeScale = function(amount) {
-    scale = scale * amount;
+    var scaleIncrement;
+
+    console.log(scale);
+
+    if (scale <= 1) {
+      scaleIncrement = 0.1;
+    } else if (scale > 1 && scale < 2) {
+      scaleIncrement = 0.2;
+    } else {
+      scaleIncrement = 0.4;
+    }
+
+
+    if (amount > 0) {
+      scale += scaleIncrement;
+    } else {
+      scale -= scaleIncrement;
+    }
+
+    scale = Math.max(scale, 0.1);
+
     $("#canvas").css("transform", "translate3d(0,0,0) scale(" + scale + ")")
     reflowScreen();
   }

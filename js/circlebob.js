@@ -123,5 +123,4 @@
     window.requestAnimationFrame(mainLoop);
   });
 
-
 }).call(this);

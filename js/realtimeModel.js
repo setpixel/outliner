@@ -1,3 +1,10 @@
+/* 
+
+TODO
+  make better error messages!!!!
+
+*/
+
 ;(function() {
 'use strict';
 
@@ -14,66 +21,64 @@
   function authorize() {
     realtimeUtils.authorize(function(response){
       if(response.error){
-        var button = document.getElementById('auth_button');
-        button.classList.remove('invisible');
-        button.addEventListener('click', function () {
+        $("#auth_window").toggleClass("hidden", false);
+        $("#auth_button").on("click", function() {
           realtimeUtils.authorize(function(response){
-            button.classList.add('invisible');
-            start();
+            if (response.error) {
+
+            } else {
+              $("#auth_window").toggleClass("hidden", true);
+              start();
+            } 
           }, true);
         });
       } else {
         start();
       }
     }, false);
-  }
+  };
 
   function start() {
-    registerCustomTypes()
-    var id = realtimeUtils.getParam('id');
+    registerCustomTypes();
+
+    var id;
+
+    if (getUrlParameter('state')) {
+      id = JSON.parse(getUrlParameter('state')).ids[0];
+    } else {
+      id = getUrlParameter('id');
+    }
+
     if (id) {
       // Load the document id from the URL
       realtimeUtils.load(id.replace('/', ''), onFileLoaded, onFileInitialize);
       documentID = id.replace('/', '');
     } else {
       // Create a new document, add it to the URL
-      
       window.gapi.client.load('drive', 'v2', function() {
-
         var insertHash = {
           'resource': {
-            mimeType: 'outliner/outliner',
-            title: 'Untitled outline.outliner',
+            mimeType: 'application/vnd.google.drive.ext-type.otl',
+            title: 'Untitled outline',
             parents: ['Outliner'], 
             labels: { restricted: true }
           }
         };
-
-
-
         window.gapi.client.drive.files.insert(insertHash).execute(function(createResponse) {
           //console.log(createResponse)
-          window.history.pushState(null, null, '?id=' + createResponse.id);
+          window.history.replaceState(null, null, '?id=' + createResponse.id);
           realtimeUtils.load(createResponse.id, onFileLoaded, onFileInitialize);
           documentID = createResponse.id;
         });
-
       });
-
-
-      // realtimeUtils.createRealtimeFile('Untitled outline', function(createResponse) {
-      //   //console.log(createResponse)
-      //   window.history.pushState(null, null, '?id=' + createResponse.id);
-      //   realtimeUtils.load(createResponse.id, onFileLoaded, onFileInitialize);
-      // });
     }
-  }
+  };
 
   function onFileInitialize(model) {
     var documentMetadata = model.createMap();
     model.getRoot().set('documentMetadata', documentMetadata);
     documentMetadata.set('title', 'New Outline');
-    documentMetadata.set('author', 'Charles Forman');
+    documentMetadata.set('author', '');
 
     var viewData = model.createMap();
     model.getRoot().set('viewData', viewData);
@@ -129,10 +134,7 @@
     node.tags.push('excitement');
     var index = outlineNodes.push(node);
     node.order = index;
-
-
-  }
-
+  };
 
   function displayObjectChangedEvent(evt) {
     //console.log(evt);
@@ -204,6 +206,22 @@
     }
   }
 
+  var getUrlParameter = function getUrlParameter(sParam) {
+      var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+          sURLVariables = sPageURL.split('&'),
+          sParameterName,
+          i;
+
+      for (i = 0; i < sURLVariables.length; i++) {
+          sParameterName = sURLVariables[i].split('=');
+
+          if (sParameterName[0] === sParam) {
+              return sParameterName[1] === undefined ? true : sParameterName[1];
+          }
+      }
+  };
+
+
   function onFileLoaded(doc) {
     docModel = doc.getModel();
     docRoot = docModel.getRoot();
@@ -213,6 +231,8 @@
     docRoot.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, displayObjectChangedEvent);
 
     outlinerApp.load(outlineNodes);
+
+    window.history.replaceState(null, null, '?id=' + documentID);
   }
 
   var OutlineNode = function(){};
@@ -244,40 +264,42 @@
     OutlineNode.prototype.beats = gapi.drive.realtime.custom.collaborativeField('beats');
 
     gapi.drive.realtime.custom.setInitializer(OutlineNode, initializeOutlineNode);
-  }
-
+  };
 
   var addNode = function(index) {
     var outlineNodes = docRoot.get('outlineNodes');
-
     var node = docModel.create('OutlineNode');
     node.title = '';
     node.type = 'beat';
     outlineNodes.insert(index, node);
     return node;
-  }
+  };
 
   var move = function(index, destIndex) {
     var outlineNodes = docRoot.get('outlineNodes');
     outlineNodes.move(index, destIndex);
-  }
+  };
 
   var remove = function(index) {
     var outlineNodes = docRoot.get('outlineNodes');
     outlineNodes.remove(index);    
-  }
-
+  };
 
   var outlineNodesAsArray = function() {
-    return docRoot.get('outlineNodes').asArray();
-  }
-
+    if (docRoot) {
+      return docRoot.get('outlineNodes').asArray();
+    } else {
+      return [];
+    }
+  };
 
   window.realtimeModel = {
     outlineNodesAsArray: outlineNodesAsArray,
     addNode: addNode,
     move: move,
     remove: remove,
+    docModel: function(){ return docModel;},
+    docRoot: function(){ return docRoot;},
     getID: function(){ return documentID; }
   };
 

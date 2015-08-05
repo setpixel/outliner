@@ -29,6 +29,7 @@
 
   var hoverTowards = function(x, y) {
     destLoc = [x,y];
+        opacity = 1;
   }
 
   var flyTowards = function(x, y) {
@@ -36,6 +37,7 @@
     acceleration = 0.4;
     elasticity = 1;
     dampening = 0.7;
+    opacity = 1;
   }
 
   var ping = function(x,y) {

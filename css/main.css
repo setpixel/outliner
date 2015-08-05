@@ -288,8 +288,9 @@ h2 {
 
 .card div:empty {
     display: block;
-    height: 1em;
+    height: auto;
     min-width: 2px;
+
 }
 
 

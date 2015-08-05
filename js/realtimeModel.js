@@ -51,8 +51,8 @@ TODO
 
     if (id) {
       // Load the document id from the URL
-      realtimeUtils.load(id.replace('/', ''), onFileLoaded, onFileInitialize);
       documentID = id.replace('/', '');
+      realtimeUtils.load(id.replace('/', ''), onFileLoaded, onFileInitialize);
     } else {
       // Create a new document, add it to the URL
       window.gapi.client.load('drive', 'v2', function() {
@@ -75,6 +75,30 @@ TODO
   };
 
   function onFileInitialize(model) {
+    if (documentID) {
+      gapi.client.load('drive', 'v2', function(){
+        var request = gapi.client.drive.files.get({
+          'fileId': documentID,
+          'alt': 'media'
+        }).execute(function(e){
+          if (!e.id) {
+            createBasicNewDoc(model);
+          } else {
+            var request = gapi.client.request({
+              'path': '/upload/drive/v2/files/' + documentID + '/realtime',
+              'method': 'PUT',
+              'params': {'uploadType': 'media'},
+              'body': JSON.stringify(e.result)});
+              request.execute();
+          }
+        });
+      });
+    } else {
+      createBasicNewDoc(model);
+    }
+  };
+
+  var createBasicNewDoc = function(model) {
     var documentMetadata = model.createMap();
     model.getRoot().set('documentMetadata', documentMetadata);
     documentMetadata.set('title', 'New Outline');
@@ -134,7 +158,7 @@ TODO
     node.tags.push('excitement');
     var index = outlineNodes.push(node);
     node.order = index;
-  };
+  }
 
   function displayObjectChangedEvent(evt) {
     //console.log(evt);
@@ -197,13 +221,78 @@ TODO
           outlinerApp.reflow();
       }
 
+      // save dump to google drive file!
+      queueDump();
 
+
+      
 
       // console.log('Event type: '  + events[i].type);
       // console.log('Local event: ' + events[i].isLocal);
       // console.log('User ID: '     + events[i].userId);
       // console.log('Session ID: '  + events[i].sessionId);
     }
+  }
+
+
+  var dumpTimeout;
+
+
+  var queueDump = function() {
+    clearTimeout(dumpTimeout);
+    dumpTimeout = setTimeout(dumpToDrive, 1000);
+  }
+
+  function encodeURL(str){
+      return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/, '');
+  }
+
+
+  var dumpToDrive = function() {
+
+    outlinerApp.screenshot(function(canvasURL){
+
+      var jsonDoc = docModel.toJson();
+      var thumbnailData = encodeURL(canvasURL.replace(/^data:image\/(png|jpg|jpeg);base64,/, ""));
+      var thumbnail = {image: thumbnailData, mimeType: "image/jpeg"}
+
+      var fileMetadata = {mimeType: "application/vnd.google.drive.ext-type.otl", thumbnail: thumbnail};
+
+      const boundary = '-------314159265358979323846';
+      const delimiter = "\r\n--" + boundary + "\r\n";
+      const close_delim = "\r\n--" + boundary + "--";
+
+      var contentType = 'application/octet-stream';
+
+      var base64Data = btoa(jsonDoc);
+
+      var multipartRequestBody =
+            delimiter +
+            'Content-Type: application/json\r\n\r\n' +
+            JSON.stringify(fileMetadata) +
+            delimiter +
+            'Content-Type: ' + contentType + '\r\n' +
+            'Content-Transfer-Encoding: base64\r\n' +
+            '\r\n' +
+            base64Data +
+            close_delim;
+
+      var request = gapi.client.request({
+          'path': '/upload/drive/v2/files/' + documentID,
+          'method': 'PUT',
+          'params': {
+            'uploadType': 'multipart', 'alt': 'json'},
+          'headers': {
+            'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+          },
+          'body': multipartRequestBody});
+      request.execute(function(e){});
+
+
+
+    })
+
+
   }
 
   var getUrlParameter = function getUrlParameter(sParam) {
@@ -223,6 +312,9 @@ TODO
 
 
   function onFileLoaded(doc) {
+    console.log("ON FILE LOADED")
+
+    //console.log(gapi.client.drive.realtime)
     docModel = doc.getModel();
     docRoot = docModel.getRoot();
 
@@ -300,7 +392,8 @@ TODO
     remove: remove,
     docModel: function(){ return docModel;},
     docRoot: function(){ return docRoot;},
-    getID: function(){ return documentID; }
+    getID: function(){ return documentID; },
+    realtimeUtils: realtimeUtils
   };
 
 }).call(this);

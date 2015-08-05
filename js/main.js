@@ -1,15 +1,18 @@
 /*
 
   HIGHLEVEL
+    //Save to google drive / import from google drive
     Inspector - hook up
     FILTERING - add tags, ability to show nodes that have tags
     UI
     Printing
-    Save to google drive / import from google drive
     Presentation view
     COLLABORATORS
 
   TODAYS BUGS:
+    make a mode to always scale to fit
+    ability to deselect
+    make it so scroll pos changes based on focus
     //fiz scaling bug
     //make it so circle bob moves around appropriately
     //figure out the scroll offset for dragging!!!
@@ -253,7 +256,7 @@
       case "beat":
         htmlList.push('<div class="card beat" id="' + obj.id + '">');
         if (obj.imageURL) {
-          htmlList.push('<img src="' + obj.imageURL + '">');
+          htmlList.push('<img src="' + obj.imageURL + '?123123" crossorigin="anonymous">');
         }
         htmlList.push('<div class="title" contenteditable="true" spellcheck="false">' + obj.title + '</div>');
         if (obj.synopsis) {
@@ -282,7 +285,7 @@
         }
         htmlList.push('<div class="clear"></div>');
         if (obj.imageURL) {
-          htmlList.push('<img src="' + obj.imageURL + '">');
+          htmlList.push('<img src="' + obj.imageURL + '?123123" crossorigin="anonymous">');
         }
         htmlList.push('<div class="title" contenteditable="true" spellcheck="false">' + obj.title + '</div>');
         if (obj.synopsis) {
@@ -698,6 +701,7 @@
   $( function() {
 
     $(document).on("mousemove", function(event) {
+      //circleBob.hoverTowards(event.clientX, event.clientY);
       if (dragItem) {
         var scrollOffsetX = $("#canvas-container").scrollLeft();
         dragItem.toggleClass( "dragged", true )
@@ -874,6 +878,33 @@
     $("#" + node.id + " .time-of-day").text(node.timeOfDay);
   }
 
+
+  var screenshot = function(callbackfunction) {
+    var newDiv = $('<div style="opacity: 0.0; position: fixed;"></div>');
+    var newDiv2 = $('<div style="left: 40px; position: relative; transform: translate3d(0px, 0px, 0px) scale(0.8);"></div>');
+    newDiv.append(newDiv2.append($("#canvas-container").html()));
+    $('body').prepend(newDiv);
+
+    var canvasURL;
+
+    html2canvas(newDiv, {
+      onrendered: function(canvas) {
+        canvasURL = canvas.toDataURL("image/jpeg", 0.5);
+        newDiv.remove();
+        callbackfunction(canvasURL);
+      },
+      width: 800,
+      height: 600,
+      async: false,
+      removeContainer: true,
+      background: "#0e76bc",
+      allowTaint: false,
+      useCORS: true
+    });
+  }
+
+
+
   window.outlinerApp = {
     init: init,
     load: load,
@@ -889,6 +920,7 @@
     reflow: reflowScreen,
     refreshNode: refreshNode,
     scaleToFit: scaleToFit,
+    screenshot: screenshot,
     getCurrentSelection: function() { return selectedItem; },
     twoplus: function() { return 2+2; }
   };

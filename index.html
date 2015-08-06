@@ -6,13 +6,17 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" media="all" href="css/main.css">
+    <link rel="stylesheet" media="all" href="css/awesomplete.css">
   </head>
   <body>
-    <script src="https://apis.google.com/js/client.js?onload=OnLoadCallback"></script>
-    <script src="https://www.gstatic.com/realtime/realtime-client-utils.js"></script>
+    <script src="http://apis.google.com/js/client.js?onload=OnLoadCallback"></script>
+    <script src="http://www.gstatic.com/realtime/realtime-client-utils.js"></script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.36.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script src="js/tinycolor.js"></script> 
+    <script src="js/awesomplete.js"></script> 
+    <script src="js/utils.js"></script> 
     <script src="js/gamepad.js"></script> 
     <script src="js/realtimeModel.js"></script>
     <script src="js/stats.js"></script>
@@ -22,15 +26,16 @@
     <script src="js/main.js"></script> 
     <div id="inspector" class="hidden">
       <h1>Edit some shit.</h1>
-        <input type="text" name="" placeholder="Title">
-        <textarea name="" placeholder="Synopsis" rows="3"></textarea>
-        <input type="text" name="" placeholder="Image URL">
-        <input type="text" name="" placeholder="Setting">
-        <input type="text" name="" placeholder="Time of day">
-        <textarea name="" placeholder="Full text" rows="5"></textarea>
-        <input type="text" name="" placeholder="Tags">
-
-      type
+      <input type="text" id="title" placeholder="Title">
+      <textarea name="" id="synopsis" placeholder="Synopsis" rows="3"></textarea>
+      <input type="text" id="imageURL" placeholder="Image URL">
+      <input type="text" id="setting" class="setting" placeholder="Setting">
+      <input type="text" id="timeOfDay" class="timeOfDay" placeholder="Time of day">
+      <textarea id="text" placeholder="Full text" rows="5"></textarea>
+      <input id="tags" class="tags" placeholder="Tags">
+      <input id="actors" class="actors" placeholder="Actors">
+      <input id="duration" name="" placeholder="Duration in seconds">
+<!--       type
       title
       synopsis
       imageURL
@@ -41,12 +46,16 @@
       tags [list]
       actors
       duration (of node)
-      color
-
-
+      color -->
     </div>        
 
-
+<datalist id="frameworks">
+  <option value="MooTools">
+  <option value="Moobile">
+  <option value="Dojo Toolkit">
+  <option value="jQuery">
+  <option value="YUI">
+</datalist>
 
 
 

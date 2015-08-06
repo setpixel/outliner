@@ -1,41 +1,62 @@
 ;(function() {
   'use strict';
 
-  var getCurrentNode = function() {
-    var nodes = realtimeModel.outlineNodesAsArray();
-    var currentNode = 0;
-    for (var i = 0; i < outlinerApp.getCurrentSelection(); i++) {
-      if (nodes[i].type != "section") {
-        currentNode++;
-      }
-    }
-    return currentNode+1;
-  }
+  var currentNode;
+  var totalNodes;
 
-  var numberOfNodes = function() {
+  var currentScene;
+  var totalScenes;
+
+  var currentTime;
+  var totalTime;
+
+
+  var generateStats = function() {
     var nodes = realtimeModel.outlineNodesAsArray();
-    var numberOfNodes = 0;
+    currentNode = 0;
+    totalNodes = 0;
+    currentScene = 0;
+    totalScenes = 0;
+    currentTime = 0;
+    totalTime = 0;
+
     for (var i = 0; i < nodes.length; i++) {
       if (nodes[i].type != "section") {
-        numberOfNodes++;
+        totalNodes++;
+      }
+      if (nodes[i].type == "scene") {
+        totalScenes++;
+        totalTime += Number(nodes[i].duration);
+      }
+
+      if (i == outlinerApp.getCurrentSelection()) {
+        currentNode = totalNodes;
+        currentScene = totalScenes;
+      }
+      if (i == (outlinerApp.getCurrentSelection()-1)) {
+        currentTime = totalTime;
       }
     }
-    return numberOfNodes; 
-  }
+  };
 
   var updateStats = function() {
+    generateStats();
+
     var html = [];
 
-    html.push( "Node " + getCurrentNode() + " of " + numberOfNodes());
-    html.push( " // 15:12 / 90:13<br/>");
-    html.push( "13 unique locations. 8 tags.");
+    html.push( "Node " + currentNode + " of " + totalNodes );
+    html.push( " | ");
+    html.push( "Scene " + currentScene + " of " + totalScenes );
+    html.push( " | ");
+    html.push( currentTime.toHHMMSS() + " / " + totalTime.toHHMMSS());
+    html.push( "<br/>");
+    html.push( realtimeModel.getIndex('actors').propertyList.length + " characters. " + realtimeModel.getIndex('setting').propertyList.length + " locations. " + realtimeModel.getIndex('tags').propertyList.length + " tags.");
     $("#stats").html(html.join(''));
 
     return html.join('');
   }
 
   window.stats = {
-    numberOfNodes: numberOfNodes,
     updateStats: updateStats,
     twoplus: function() { return 2+2; }
   };

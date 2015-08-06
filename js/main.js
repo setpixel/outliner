@@ -1,13 +1,43 @@
 /*
 
+  TODAYS
+    auto on card
+    dump on window close
+    update stats
+    filter by any index
+    user set background
+    completion metadata
+    fix scrollbars
+    figure out collaboration focus bug
+
   HIGHLEVEL
     //Save to google drive / import from google drive
-    Inspector - hook up
-    FILTERING - add tags, ability to show nodes that have tags
+    UNDO
+    INSPECTOR
+      make look nice: 
+        font sizes
+        resize text areas
+        awecomplete
+        ui to close window
+    FILTERING
+      add tags
+      ability to show nodes that have tags
+      tag coloring?
     UI
     Printing
-    Presentation view
+    VIEWS
+      Presentation view
+      Timeline view
+    IMPORT/EXPORT
+      fountain loader / fountain exporter
     COLLABORATORS
+      location of selection
+      location of cursor
+      chat
+    Speech playback
+    script doctor
+
+
 
   TODAYS BUGS:
     make a mode to always scale to fit
@@ -127,6 +157,8 @@
   var tempInsert;
   var insertPosition;
 
+  var preventArrowToggle = false;
+
   var init = function() {
     //console.log("Init!");
     // maybe not much to do here. should load externally from the model
@@ -146,7 +178,6 @@
     }
 
 
-
     reflowScreen();
     setTimeout(reflowScreen, 200);
     //setTimeout(scaleToFit, 1000);
@@ -156,37 +187,91 @@
 
 
     changeScale(1);
+
+    attachEventListenersToInspector();
+
+
   }
+
+
+  var updateInspectorValues = function() {
+    var nodes = realtimeModel.outlineNodesAsArray();
+    var node = nodes[selectedItem]
+
+    var fieldList = ['title', 'synopsis', 'imageURL','setting','timeOfDay','text', 'tags', 'actors', 'duration'];
+
+    for (var i = 0; i < fieldList.length; i++) {
+      $("#inspector #" + fieldList[i] ).val(node[fieldList[i]]);
+    }
+
+  }
+
 
   var attachEventListenersToNode = function(nodeID) {
     setTimeout(function() {
 
       $("#" + nodeID + " .title").on("input", function(event) {
-        var nodes = realtimeModel.outlineNodesAsArray()
+        var nodes = realtimeModel.outlineNodesAsArray();
         var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.id })[0];
-        node.title = $(event.target).text()
+        node.title = $(event.target).text();
+        updateInspectorValues();
       });
     
       $("#" + nodeID + " .synopsis").on("input", function(event) {
-        var nodes = realtimeModel.outlineNodesAsArray()
+        var nodes = realtimeModel.outlineNodesAsArray();
         var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.id })[0];
-        node.synopsis = $(event.target).text()
+        node.synopsis = $(event.target).text();
+        updateInspectorValues();
       });
 
-      $("#" + nodeID + " .setting").on("input", function(event) {
-        var nodes = realtimeModel.outlineNodesAsArray()
-        var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.id })[0];
-        node.setting = $(event.target).text()
+      $("#" + nodeID + " .setting").on("input change paste blur", function(event) {
+        var nodes = realtimeModel.outlineNodesAsArray();
+        
+        if (event.target.parentElement.id === "") {
+          var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.parentElement.parentElement.id })[0];
+        } else {
+          var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.id })[0];
+        }
+        node.setting = $(event.target).text();
+        updateInspectorValues();
       });
+
+      if($("#" + nodeID + " .setting").length) {
+        $("#" + nodeID + " .setting").data({a: new Awesomplete($("#" + nodeID + " .setting")[0], {
+            list: $.map(realtimeModel.getIndex('setting').propertyList, function(value, index) { return value.toUpperCase() }),
+            minChars: -1,
+            maxItems: 15,
+            autoFirst: true
+          })
+        }); 
+      }
     
       $("#" + nodeID + " .time-of-day").on("input", function(event) {
-        var nodes = realtimeModel.outlineNodesAsArray()
-        var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.id })[0];
-        node.timeOfDay = $(event.target).text()
+        var nodes = realtimeModel.outlineNodesAsArray();
+        if (event.target.parentElement.id === "") {
+          var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.parentElement.parentElement.id })[0];
+        } else {
+          var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.id })[0];
+        }
+        node.timeOfDay = $(event.target).text();
+        updateInspectorValues();
       });
-    
+
+      if($("#" + nodeID + " .time-of-day").length) {
+        $("#" + nodeID + " .time-of-day").data({a: new Awesomplete($("#" + nodeID + " .time-of-day")[0], {
+            list: $.map(realtimeModel.getIndex('timeOfDay').propertyList, function(value, index) { return value.toUpperCase() }),
+            minChars: -1,
+            maxItems: 15,
+            autoFirst: true
+          })
+        });
+      }
+
       $("#" + nodeID).on("mousedown", function(event) {
+        $('input').blur()
+
         selectItemByID(event.currentTarget.id)
+
 
         if (!$(event.target).attr("contenteditable")) {
           dragItem = $(event.currentTarget);
@@ -205,9 +290,6 @@
       $("#" + nodeID).on('drop', function (e) {
         e.stopPropagation();
         e.preventDefault();
-
-        console.log("im here")
-
 
         var files = e.originalEvent.dataTransfer.files;
         if (files.length === 1) {
@@ -247,6 +329,93 @@
     }, 200);
   }
 
+  var a;
+
+  var attachEventListenersToInspector = function() {
+    $("#inspector input, #inspector textarea").on("input change paste blur", function(event) {
+      var nodes = realtimeModel.outlineNodesAsArray();
+      var node = nodes[selectedItem];
+      if ($(event.currentTarget).val() !== node[event.currentTarget.id]) {
+
+              console.log("stuff!")
+
+        node[event.currentTarget.id] = $(event.currentTarget).val();
+        updateLocalTitle(node);
+        if (event.currentTarget.id == "synopsis") {
+          updateLocalSynopsis(node); 
+        }
+        if (event.currentTarget.id == "setting") {
+          updateLocalSetting(node);
+        }
+        if (event.currentTarget.id == "timeOfDay") {
+          updateLocalTimeOfDay(node);
+        }
+      }
+
+
+    });
+
+    // $("#tags").on("focus", function() {
+    //   console.log("IM HERE!!")
+    //   a.open();
+    // });
+
+    // setTimeout(function() {
+
+
+    $('#tags').data({a: new Awesomplete($("#tags")[0], {
+        list: $.map(realtimeModel.getIndex('tags').propertyList, function(value, index) { return value.toLowerCase() }),
+        minChars: -1,
+        maxItems: 15,
+        autoFirst: true,
+        filter: function(text, input) {
+          return Awesomplete.FILTER_CONTAINS(text, input.match(/[^,]*$/)[0]);
+        },
+        replace: function(text) {
+          var before = this.input.value.match(/^.+,\s*|/)[0];
+          this.input.value = before + text + ", ";
+        } 
+      })
+    });
+
+    $('#setting').data({a: new Awesomplete($("#setting")[0], {
+        list: $.map(realtimeModel.getIndex('setting').propertyList, function(value, index) { return value.toUpperCase() }),
+        minChars: -1,
+        maxItems: 15,
+        autoFirst: true
+      })
+    });
+
+    $('#timeOfDay').data({a: new Awesomplete($("#timeOfDay")[0], {
+        list: $.map(realtimeModel.getIndex('timeOfDay').propertyList, function(value, index) { return value.toUpperCase() }),
+        minChars: -1,
+        maxItems: 15,
+        autoFirst: true
+      })
+    });
+
+    $('#actors').data({a: new Awesomplete($("#actors")[0], {
+        list: $.map(realtimeModel.getIndex('actors').propertyList, function(value, index) { return value.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) }),
+        minChars: -1,
+        maxItems: 15,
+        autoFirst: true,
+        filter: function(text, input) {
+          return Awesomplete.FILTER_CONTAINS(text, input.match(/[^,]*$/)[0]);
+        },
+        replace: function(text) {
+          var before = this.input.value.match(/^.+,\s*|/)[0];
+          this.input.value = before + text + ", ";
+        } 
+      })
+    });
+
+
+
+
+  }
+
+
+
   var displayNodeHTML = function(obj) {
     var htmlList = [];
     switch (obj.type) {
@@ -255,6 +424,7 @@
         break;
       case "beat":
         htmlList.push('<div class="card beat" id="' + obj.id + '">');
+        htmlList.push('<div class="label-container"></div>');
         if (obj.imageURL) {
           htmlList.push('<img src="' + obj.imageURL + '?123123" crossorigin="anonymous">');
         }
@@ -273,15 +443,16 @@
         break;
       case "scene":
         htmlList.push('<div class="card scene" id="' + obj.id + '">');
+        htmlList.push('<div class="label-container"></div>');
         if (obj.setting) {
-          htmlList.push('<div class="setting" contenteditable="true" spellcheck="false">' + obj.setting + '</div>');
+          htmlList.push('<div class="go-left"><div class="setting" contenteditable="true" spellcheck="false">' + obj.setting + '</div></div>');
         } else {
-          htmlList.push('<div class="setting hidden" contenteditable="true" spellcheck="false"></div>');
+          htmlList.push('<div class="go-left"><div class="setting hidden" contenteditable="true" spellcheck="false"></div></div>');
         }
         if (obj.timeOfDay) {
-          htmlList.push('<div class="time-of-day" contenteditable="true" spellcheck="false">' + obj.timeOfDay + '</div>');
+          htmlList.push('<div class="go-right"><div class="time-of-day" contenteditable="true" spellcheck="false">' + obj.timeOfDay + '</div></div>');
         } else {
-          htmlList.push('<div class="time-of-day hidden" contenteditable="true" spellcheck="false"></div>');
+          htmlList.push('<div class="go-right"><div class="time-of-day hidden" contenteditable="true" spellcheck="false"></div></div>');
         }
         htmlList.push('<div class="clear"></div>');
         if (obj.imageURL) {
@@ -362,6 +533,7 @@
     }
     
     stats.updateStats();
+    updateInspectorValues();
   }
 
   var goToNextField = function() {
@@ -433,9 +605,11 @@
           selectedItem = selectedItem+1;
           reflowScreen();
         } else {
-          var length = realtimeModel.outlineNodesAsArray().length;
-          selectedItem = Math.min(selectedItem+1, length-1);
-          selectItem();
+          if (!preventArrowToggle) {
+            var length = realtimeModel.outlineNodesAsArray().length;
+            selectedItem = Math.min(selectedItem+1, length-1);
+            selectItem();
+          }
         }
 
         break;
@@ -447,13 +621,16 @@
           selectedItem = selectedItem-1;
           reflowScreen();
         } else {
-          selectedItem = Math.max(selectedItem-1, 0);
-          selectItem();
+          if (!preventArrowToggle) {
+            selectedItem = Math.max(selectedItem-1, 0);
+            selectItem();
+          }
         }
         break;
       // enter
       case 13:
-        if ((document.activeElement.nodeName == "INPUT") || (document.activeElement.nodeName == "TEXTAREA")) {
+        console.log(preventArrowToggle)
+        if ((document.activeElement.nodeName == "INPUT") || (document.activeElement.nodeName == "TEXTAREA") || (document.activeElement.contentEditable == true) || (preventArrowToggle)) {
           console.log("im on a input!")
         } else {
           if (event.shiftKey) {
@@ -473,7 +650,7 @@
         break;
       // p?
       case 27:
-        console.log(JSON.stringify(nodes));
+        // console.log(JSON.stringify(nodes));
         break;
       case 82:
         reflowScreen();
@@ -903,6 +1080,85 @@
     });
   }
 
+  var shareDialogue = function() {
+
+    init = function() {
+        var s = new gapi.drive.share.ShareClient('25911058412');
+        s.setItemIds([ realtimeModel.getID() ]);
+    }
+    
+    gapi.load('drive-share', init);
+
+
+  }
+
+  var filterTags = function(tags) {
+    // turn all nodes dark
+    $('.card').toggleClass("dim", true);
+    $('.label-container').empty();
+    // get the ids for tags
+    
+    for (var z = 0; z < tags.length; z++) {
+      nodes = realtimeModel.getIndex('tags').propertyElements[tags[z]];
+      // turn those nodes light
+      for (var i = 0; i < nodes.length; i++) {
+        $("#" + nodes[i]).toggleClass("dim", false);
+        $("#" + nodes[i] + " .label-container").append('<div style="background-color: ' + tinycolor(outlinerUtils.stringToAscii(tags[z])).desaturate(10).brighten(10).toHexString() + '; border-left: 3px solid ' + tinycolor(outlinerUtils.stringToAscii(tags[z])).toHexString() + ';">' + tags[z] + '</div>');
+      }
+
+
+    }
+
+
+
+    // color them right
+  }
+
+  var preventArrows = function() {
+    preventArrowToggle = true;
+    setTimeout(function(){ preventArrowToggle = true; }, 400);
+  }
+
+  var releaseArrows = function() {
+    setTimeout(function(){ preventArrowToggle = false; }, 100);
+  }
+
+  var updateAutocomplete = function(property) {
+
+    var updateList = function(property) {
+      switch (property) {
+        case 'setting':
+          $('.' + property).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toUpperCase() });
+          break;
+        case 'timeOfDay':
+          $('.' + property).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toUpperCase() });
+          break;
+        case 'tags':
+          $('.' + property).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toLowerCase() });
+          break;
+        case 'tags':
+          $('.' + property).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toLowerCase() });
+          break;
+        default:
+          $('.' + property).data().a.list = $.map(realtimeModel.getIndex('actors').propertyList, function(value, index) { return value.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) });
+      }
+    }
+
+    if ($('.' + property).data().a) {
+      if (!preventArrowToggle) {
+        updateList(property);
+      } else {
+        updateList(property);
+
+        // setTimeout(function() {
+        //   console.log("UPDATING" + property)
+        //   updateList(property);
+        // },1000)
+      }
+    }
+
+
+  }
 
 
   window.outlinerApp = {
@@ -921,6 +1177,11 @@
     refreshNode: refreshNode,
     scaleToFit: scaleToFit,
     screenshot: screenshot,
+    shareDialogue: shareDialogue,
+    filterTags: filterTags,
+    preventArrows: preventArrows,
+    releaseArrows: releaseArrows,
+    updateAutocomplete: updateAutocomplete,
     getCurrentSelection: function() { return selectedItem; },
     twoplus: function() { return 2+2; }
   };

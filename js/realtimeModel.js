@@ -16,6 +16,12 @@ TODO
 
   var documentID;
 
+  var tagList;
+  var tagElements;
+
+  var indices = {};
+
+
   authorize();
 
   function authorize() {
@@ -130,9 +136,7 @@ TODO
     node.synopsis = 'This is a synopsis. You can add synopsis text by pressing command + return.';
     node.setting = 'INT. APARTMENT';
     node.timeOfDay = 'night';
-    node.tags.push('apartment');
-    node.tags.push('fun');
-    node.tags.push('excitement');
+    node.tags = 'apartment, fun, excitement';
     var index = outlineNodes.push(node);
     node.order = index;
 
@@ -153,9 +157,7 @@ TODO
     node.title = 'Drag an image file on me!';
     node.type = 'scene';
     node.synopsis = 'Try it out! Scenes and beats can have images.';
-    node.tags.push('apartment');
-    node.tags.push('fun');
-    node.tags.push('excitement');
+    node.tags = 'apartment, fun, excitement';
     var index = outlineNodes.push(node);
     node.order = index;
   }
@@ -186,6 +188,11 @@ TODO
           }
           break;
         case "value_changed":
+
+          if (events[i].target.id == outlineNodesAsArray()[outlinerApp.getCurrentSelection()].id) {
+            $("#inspector #" + events[i].property).val(events[i].target[events[i].property])
+          }
+
           switch (events[i].property) {
             case "type":
               if (!events[i].isLocal){
@@ -206,11 +213,19 @@ TODO
               if (!events[i].isLocal){
                 outlinerApp.updateLocalSetting(events[i].target);
               }
+              createIndex('setting', false);
               break;
             case "timeOfDay":
               if (!events[i].isLocal){
                 outlinerApp.updateLocalTimeOfDay(events[i].target);
               }
+              createIndex('timeOfDay', false);
+              break;
+            case "actors":
+              createIndex('actors', true);
+              break;
+            case "tags":
+              createIndex('tags', true);
               break;
             case "imageURL":
               if (!events[i].isLocal){
@@ -224,9 +239,6 @@ TODO
       // save dump to google drive file!
       queueDump();
 
-
-      
-
       // console.log('Event type: '  + events[i].type);
       // console.log('Local event: ' + events[i].isLocal);
       // console.log('User ID: '     + events[i].userId);
@@ -234,13 +246,20 @@ TODO
     }
   }
 
-
   var dumpTimeout;
 
+  window.onbeforeunload = function() {
+    if (dumpTimeout) {
+      dumpToDrive();
+      console.log("asdasdasd")
+      return 'We are saving to drive... Please wait 10 seconds.';
+    }
+  };
 
   var queueDump = function() {
     clearTimeout(dumpTimeout);
-    dumpTimeout = setTimeout(dumpToDrive, 1000);
+    dumpTimeout = null;
+    dumpTimeout = setTimeout(dumpToDrive, 20000);
   }
 
   function encodeURL(str){
@@ -249,7 +268,8 @@ TODO
 
 
   var dumpToDrive = function() {
-
+    clearTimeout(dumpTimeout);
+    dumpTimeout = null;
     outlinerApp.screenshot(function(canvasURL){
 
       var jsonDoc = docModel.toJson();
@@ -322,10 +342,82 @@ TODO
 
     docRoot.addEventListener(gapi.drive.realtime.EventType.OBJECT_CHANGED, displayObjectChangedEvent);
 
+    createIndex('tags', true);
+    createIndex('actors', true);
+    createIndex('setting', false);
+    createIndex('timeOfDay', false);
+
+
+
     outlinerApp.load(outlineNodes);
 
     window.history.replaceState(null, null, '?id=' + documentID);
   }
+
+  var createIndex = function(property, isList) {
+
+    var propertyList = [];
+    var propertyElements = {};
+
+    var propertyMap = {};
+
+    var nodes = outlineNodesAsArray();
+
+    for (var i = 0; i < nodes.length; i++) {
+      if (typeof nodes[i][property] === 'string') {
+        if (isList) {
+          var propertyItems = nodes[i][property].split(",");
+          for (var z = 0; z < propertyItems.length; z++) {
+            var item = $.trim(propertyItems[z]);
+            if (item !== "") {
+              propertyMap[item.toLowerCase()] = ++propertyMap[item.toLowerCase()] || 1;
+              if (propertyElements[item.toLowerCase()]) {
+                propertyElements[item.toLowerCase()].push(nodes[i].id)
+              } else {
+                propertyElements[item.toLowerCase()] = [nodes[i].id]
+              }
+            }
+          }
+        } else {
+          var item = nodes[i][property];
+          if (item !== "") {
+            propertyMap[item.toLowerCase()] = ++propertyMap[item.toLowerCase()] || 1;
+            if (propertyElements[item.toLowerCase()]) {
+              propertyElements[item.toLowerCase()].push(nodes[i].id)
+            } else {
+              propertyElements[item.toLowerCase()] = [nodes[i].id]
+            }
+          }
+        }
+      }
+    }
+
+    var propertyList = $.map(propertyMap, function(value, index){
+      return [[index, value]];
+    });
+
+    propertyList.sort(function(a,b){
+      if (a[1] < b[1]){
+        return 1;
+      } else if (a[1] > b[1]) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+    
+    propertyList = $.map(propertyList, function(value, index){
+      return value[0];
+    });
+
+    indices[property] = {propertyList: propertyList, propertyElements: propertyElements};
+
+    outlinerApp.updateAutocomplete(property);
+    setTimeout(function(){stats.updateStats();}, 1000);
+    //console.log("Created index for: " + property)
+    // console.log(indices[property])
+    return indices[property];
+  };
 
   var OutlineNode = function(){};
 
@@ -334,8 +426,6 @@ TODO
     function initializeOutlineNode() {
       var model = gapi.drive.realtime.custom.getModel(this);
       this.id = Date.now();
-      this.tags = model.createList();
-      this.actors = model.createList();
       this.beats = model.createList();
     }
 
@@ -354,6 +444,7 @@ TODO
     OutlineNode.prototype.tags = gapi.drive.realtime.custom.collaborativeField('tags');
     OutlineNode.prototype.actors = gapi.drive.realtime.custom.collaborativeField('actors');
     OutlineNode.prototype.beats = gapi.drive.realtime.custom.collaborativeField('beats');
+    OutlineNode.prototype.duration = gapi.drive.realtime.custom.collaborativeField('duration');
 
     gapi.drive.realtime.custom.setInitializer(OutlineNode, initializeOutlineNode);
   };
@@ -393,7 +484,7 @@ TODO
     docModel: function(){ return docModel;},
     docRoot: function(){ return docRoot;},
     getID: function(){ return documentID; },
-    realtimeUtils: realtimeUtils
+    getIndex: function(index) { return indices[index]; }
   };
 
 }).call(this);

@@ -11,6 +11,7 @@ TODO
   var clientId = '25911058412-5cd4rmeie654agjb6j6s9nb05u8ao7h1.apps.googleusercontent.com';
   var realtimeUtils = new utils.RealtimeUtils({ clientId: clientId });
 
+  var document;
   var docModel;
   var docRoot;
 
@@ -21,10 +22,11 @@ TODO
 
   var indices = {};
 
-
   authorize();
 
   function authorize() {
+    outlinerUtils.browserCheck();
+
     realtimeUtils.authorize(function(response){
       if(response.error){
         $("#auth_window").toggleClass("hidden", false);
@@ -251,8 +253,7 @@ TODO
   window.onbeforeunload = function() {
     if (dumpTimeout) {
       dumpToDrive();
-      console.log("asdasdasd")
-      return 'We are saving to drive... Please wait 10 seconds.';
+      //return 'We are saving to drive... Please wait 10 seconds.';
     }
   };
 
@@ -278,9 +279,9 @@ TODO
 
       var fileMetadata = {mimeType: "application/vnd.google.drive.ext-type.otl", thumbnail: thumbnail};
 
-      const boundary = '-------314159265358979323846';
-      const delimiter = "\r\n--" + boundary + "\r\n";
-      const close_delim = "\r\n--" + boundary + "--";
+      var boundary = '-------314159265358979323846';
+      var delimiter = "\r\n--" + boundary + "\r\n";
+      var close_delim = "\r\n--" + boundary + "--";
 
       var contentType = 'application/octet-stream';
 
@@ -332,9 +333,9 @@ TODO
 
 
   function onFileLoaded(doc) {
-    console.log("ON FILE LOADED")
+    //console.log("ON FILE LOADED")
 
-    //console.log(gapi.client.drive.realtime)
+    document = doc;
     docModel = doc.getModel();
     docRoot = docModel.getRoot();
 
@@ -347,10 +348,9 @@ TODO
     createIndex('setting', false);
     createIndex('timeOfDay', false);
 
-
-
     outlinerApp.load(outlineNodes);
-
+    scriptDoctor.start();
+    
     window.history.replaceState(null, null, '?id=' + documentID);
   }
 
@@ -445,6 +445,7 @@ TODO
     OutlineNode.prototype.actors = gapi.drive.realtime.custom.collaborativeField('actors');
     OutlineNode.prototype.beats = gapi.drive.realtime.custom.collaborativeField('beats');
     OutlineNode.prototype.duration = gapi.drive.realtime.custom.collaborativeField('duration');
+    OutlineNode.prototype.completion = gapi.drive.realtime.custom.collaborativeField('completion');
 
     gapi.drive.realtime.custom.setInitializer(OutlineNode, initializeOutlineNode);
   };
@@ -481,6 +482,7 @@ TODO
     addNode: addNode,
     move: move,
     remove: remove,
+    document: function(){ return document;},
     docModel: function(){ return docModel;},
     docRoot: function(){ return docRoot;},
     getID: function(){ return documentID; },

@@ -10,7 +10,6 @@
   var currentTime;
   var totalTime;
 
-
   var generateStats = function() {
     var nodes = realtimeModel.outlineNodesAsArray();
     currentNode = 0;
@@ -54,7 +53,7 @@
     $("#stats").html(html.join(''));
 
     return html.join('');
-  }
+  };
 
   window.stats = {
     updateStats: updateStats,

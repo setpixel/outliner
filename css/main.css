@@ -16,7 +16,11 @@
   /* Pretty Modern Browsers */
   font-weight: 700; }
 
-
+@font-face {
+  font-family: 'courierprime';
+  src: url('../data/fonts/courierprime/courier-prime.ttf') format('woff');
+  /* Pretty Modern Browsers */
+  font-weight: 200; }
 
 body {
   padding: 0px;
@@ -88,6 +92,7 @@ body{
   margin: 20px;
   width: 0px;
   height: 0px;
+ /* -webkit-perspective: 1000;*/
 }
 
 
@@ -96,6 +101,7 @@ body{
   display:block;
   box-sizing: content-box;
   width: 200px;
+  z-index: 500;
 }
 
 .section {
@@ -130,6 +136,7 @@ body{
   transition: transform 200ms ease, top 200ms ease, left 200ms ease;
 
   box-shadow: 0px 1px 0px 0px rgba(0,0,0,0.76);
+  /*z-index: 500;*/
 }
 
 
@@ -151,12 +158,6 @@ body{
   transform: translate3d(0,0,0) scale(1.1);
   transition: transform 100ms ease-out, top 0s, left 0s;
   cursor:move;
-}
-
-
-.card:hover {
-/*  transform: translate3d(0,0,0) scale(2.1);
-*/  
 }
 
 .card .go-left {
@@ -332,12 +333,13 @@ h2 {
 
 
 #inspector {
+  font-family: 'proximanova';
   right: 0px;
   top: 0px;
   bottom: 0px;
   width: 450px;
   height: auto;
-  z-index: 999;
+  z-index: 9999;
   background-color: rgba(255,255,255,0.9);
   display: block;
   position: fixed;
@@ -351,62 +353,142 @@ h2 {
 }
 
 #inspector input, textarea {
+  font-family: 'proximanova';
+  font-weight: 100;
   display: block;
   width: 450px;
   outline: 0;
-  padding-bottom: 10px;
+  padding-bottom: 5px;
   margin-bottom: 10px;
   margin-right: 20px;
   border: 0;
-  border-bottom: 1px dotted rgba(0,0,0,0.3);
+  border-bottom: 1px dotted rgba(0,0,0,0.2);
   background: transparent;
   box-sizing: border-box;
   font-size: 20px;
   text-align: bottom;
+  color: #666;
+}
+
+#inspector #title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #666;
+}
+
+#inspector #text {
+  font-family: 'courierprime';
+  font-size: 12px;
+  font-weight: 100;
+  color: #666;
+}
+
+#setting, #timeOfDay {
+  text-transform: uppercase;
+}
+
+#inspector select {
+  font-family: 'proximanova';
+  font-size: 16px;
+  font-weight: 300;
+  outline: 0;
+  border: 1px solid rgba(0,0,0,0.3);
+  background: transparent;
+  width: 150px;
+  padding: -30px;
+  margin-bottom: 20px;
+  height: 40px;
+  appearance: none;
+/*  background: url(http://www.stackoverflow.com/favicon.ico) 96% / 15% no-repeat #eee;
+*/}
+
+
+#toolbarbg {
+  display: block;
+  position: absolute;
+  background: linear-gradient(0deg, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0) 100%);
+  right: 0px;
+  bottom: 0px;
+  width: 100%;
+  height: 250px;
+  opacity: 0.3;
+  transition: opacity 500ms ease;
 }
 
 #toolbar {
-  background: linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%);
   color: #fff;
-  position: fixed;
+  position: absolute;
   display: block;
   z-index: 999;
   right: 0px;
   bottom: 0px;
   width: 100%;
-  height: 100px;
-  padding-left: 20px;
-  padding-top: 0px;
-  box-sizing: border-box;
-  visibility: hidden;
+  height: 70px;
+    -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 #toolbar .logo {
   width: 150px;
-  box-sizing: border-box;
-  float: left;
   -webkit-filter: drop-shadow(0px 2px 0px rgba(0,0,0,.5));
+  padding-left: 20px;
+  bottom: 20px;
+  position: absolute;
+  opacity: 0.3;
+  transition: opacity 2000ms ease;
 
 }
 
+#toolbar.active .logo {
+  opacity: 1;
+  transition: opacity 200ms ease;
+}
+
+#toolbar .block {
+  display: block;
+  position: absolute;
+}
+
+
 #toolbar ul {
-  margin: 0px;
   float: left;
+  display: block;
+  position: relative;
+  margin: 0px;
   list-style: none;
   margin-right: 10px;
-  
+  margin-top: 17px;
+  visibility: visible;
+  opacity: 0;
+  transition: opacity 2000ms ease;
+}
 
+#toolbar.active ul {
+  opacity: 1;
+  transition: opacity 200ms ease;
 }
 
 #toolbar li {
   float: left;
 /*  border: 4px none rgba(255,255,255,0.0);
 */
+  font-size: 15px;
   margin-right: 4px;
   border-right: 0;
-  padding: 10px 20px;
-  background-color: rgba(255,255,255,0.4);
-  box-shadow: 0px 2px 0px 0px rgba(0,0,0,0.3);
+  padding: 10px 5px;
+  opacity: 0.6;
+  text-shadow: 0px 1px 0px rgba(0,0,0,0.5); 
+
+}
+
+#toolbar li:hover {
+  opacity: 1;
+  background-color: rgba(255,255,255,0.0);
+  cursor:pointer;
 }
 
 #toolbar li:first-child {
@@ -417,13 +499,6 @@ h2 {
   border-radius: 0 8px 8px 0;
 /*  border-right: 2px solid rgba(255,255,255,0.4);*/
 }
-
-#2circle-bob:hover {
-    width: 200px;
-    transition: height 100ms ease, width 100ms ease;
-}
-
-
 
 #circle-bob {
   position: fixed;
@@ -475,10 +550,9 @@ h2 {
   color: rgba(255,255,255,0.7);
   text-shadow: 0px 1px 0px rgba(0,0,0,0.3); 
   position: fixed;
-  right: 0px;
   bottom: 0px;
   text-align: right;
-  padding: 10px;
+  padding: 20px;
 }
 
 #help {
@@ -555,5 +629,123 @@ h2 {
 #auth_button:hover {
   background-color: #2fb9f2;
 }
+
+#chatwindow {
+  box-sizing: border-box;
+  font-size: 15px;
+  padding: 20px;
+  background-color: rgba(0,0,0,0.8);
+  display: block;
+  position: absolute;
+  width: 350px;
+  height: 450px;
+  z-index: 999;
+  border-radius: 8px;
+  right: 30px;
+  top: 30px;
+  overflow: hidden;
+  transition: width 500ms ease, height 300ms ease, background-color 500ms ease, top 300ms ease, left 300ms ease, transform 100ms ease;
+}
+
+#chatwindow.minimized {
+  overflow: hidden;
+  height: 40px;
+  width: 300px;
+  opacity: 0.4;
+  bottom: 12px;
+  padding: 10px;
+  background-color: rgba(0,0,0,0.3);
+  transition: width 500ms ease, height 300ms ease, background-color 500ms ease, top 500ms ease, left 500ms ease;
+}
+
+#chatwindow.dragged {
+  transform: translate3d(0,0,0) scale(1.05);
+  transition: transform 100ms ease;
+}
+
+#chatoutput {
+  color: rgb(255,255,255);
+  height: 375px;
+  overflow: auto;
+/*  -webkit-touch-callout: text;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;*/
+}
+
+#chatwindow.minimized #chatoutput{
+  height: 19px;
+}
+
+
+#chatoutput .screenname {
+  color: #777;
+  margin-right: 10px;
+  display: block;
+}
+
+#chatoutput .text {
+  color: #ccc;
+  display: block;
+}
+
+#chatwindow .minimizebutton {
+  display: block;
+  position: absolute;
+  background-color: rgba(255,255,255,0.0);
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  padding-left: 5px;
+  box-sizing: border-box;
+  right: 10px;
+  top: 10px;
+}
+
+#chatwindow .minimizebutton:hover {
+  background-color: rgba(255,255,255,0.08);
+}
+
+#chatwindow.minimized .minimizebutton{
+  visibility: hidden;
+}
+
+#chatwindow .minimizebutton span {
+  display: block;
+  position: absolute;
+  background-color: rgba(255,255,255,0.6);
+  width: 20px;
+  height: 4px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  bottom: 5px;
+  left: 5px;
+}
+
+
+#chatinput {
+  font-family: 'proximanova';
+  color: rgb(255,255,255);
+  font-size: 15px;
+  display: block;
+  position: absolute;
+  bottom: 20px;
+  font-weight: 100;
+  width: 310px;
+  outline: 0;
+  padding-top: 10px;
+  border: 0;
+  border-top: 1px dotted rgba(255,255,255,0.2);
+  background: transparent;
+  box-sizing: border-box;
+  color: #eee;
+}
+
+#chatwindow.minimized #chatinput {
+  visibility: hidden;
+}
+
 
 

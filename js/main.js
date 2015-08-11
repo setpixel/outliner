@@ -1,14 +1,18 @@
 /*
 
   TODAYS
-    auto on card
-    dump on window close
-    update stats
+    hook up type change
+    relayout inspector
+    listen for image load for reflow
+    //auto on card
+    //dump on window close
+    //update stats
     filter by any index
     user set background
     completion metadata
     fix scrollbars
     figure out collaboration focus bug
+    figure out safari bug
 
   HIGHLEVEL
     //Save to google drive / import from google drive
@@ -72,9 +76,9 @@
     //fullscreen
     //scale to fit the screen
     left and right arrows
-    stats display
+    //stats display
     add printing capability
-    detail view for editing
+    //detail view for editing
 
   TODO:
     //make sure auth is a button initiated by a click event 
@@ -139,8 +143,6 @@
     Do beats have a type? Character or Plot?
 */
 
-//var Outliner = Outliner || {};
-
 ;(function() {
   'use strict';
 
@@ -159,11 +161,6 @@
 
   var preventArrowToggle = false;
 
-  var init = function() {
-    //console.log("Init!");
-    // maybe not much to do here. should load externally from the model
-  }
-
   var load = function(outlineNodes) {
     var htmlList = [];
     for (var i = 0; i < outlineNodes.length; i++) {
@@ -171,41 +168,34 @@
     };
     $("#canvas").append(htmlList.join(''));
 
-    // attach a listener to the text
     for (var i = 0; i < outlineNodes.length; i++) {
-      // attach node event listeners
       attachEventListenersToNode(outlineNodes.get(i).id)
     }
 
-
     reflowScreen();
     setTimeout(reflowScreen, 200);
-    //setTimeout(scaleToFit, 1000);
+    setTimeout(reflowScreen, 600);
     
     selectedItem = 1;
     selectItem();
 
-
     changeScale(1);
 
     attachEventListenersToInspector();
-
-
-  }
-
+  };
 
   var updateInspectorValues = function() {
     var nodes = realtimeModel.outlineNodesAsArray();
-    var node = nodes[selectedItem]
+    var node = nodes[selectedItem];
 
-    var fieldList = ['title', 'synopsis', 'imageURL','setting','timeOfDay','text', 'tags', 'actors', 'duration'];
+    var fieldList = ['title', 'synopsis', 'imageURL','setting','timeOfDay','text', 'tags', 'actors', 'duration', 'completion'];
 
     for (var i = 0; i < fieldList.length; i++) {
       $("#inspector #" + fieldList[i] ).val(node[fieldList[i]]);
     }
 
-  }
-
+    $("#inspector #type" ).val(node['type'].capitalize());
+  };
 
   var attachEventListenersToNode = function(nodeID) {
     setTimeout(function() {
@@ -226,7 +216,6 @@
 
       $("#" + nodeID + " .setting").on("input change paste blur", function(event) {
         var nodes = realtimeModel.outlineNodesAsArray();
-        
         if (event.target.parentElement.id === "") {
           var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.parentElement.parentElement.id })[0];
         } else {
@@ -246,7 +235,7 @@
         }); 
       }
     
-      $("#" + nodeID + " .time-of-day").on("input", function(event) {
+      $("#" + nodeID + " .time-of-day").on("input change paste blur", function(event) {
         var nodes = realtimeModel.outlineNodesAsArray();
         if (event.target.parentElement.id === "") {
           var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.parentElement.parentElement.id })[0];
@@ -272,11 +261,12 @@
 
         selectItemByID(event.currentTarget.id)
 
-
         if (!$(event.target).attr("contenteditable")) {
           dragItem = $(event.currentTarget);
-
-          dragTimeoutID = setTimeout(function() {dragItem.toggleClass( "dragged", true )}, 100);
+          dragTimeoutID = setTimeout(function() {
+            if (dragItem) {
+              dragItem.toggleClass( "dragged", true )
+            }}, 100);
 
           if (event.currentTarget !== event.target) {
             // clicked on an item within the card
@@ -293,52 +283,22 @@
 
         var files = e.originalEvent.dataTransfer.files;
         if (files.length === 1) {
-        var file = files[0];
-
-
-
-          // check to make sure it's an image.
+          var file = files[0];
 
           if ($.inArray(file.type, ['image/gif', 'image/jpg', 'image/jpeg', 'image/png']) != -1) {
-            // upload it!
-
+              // upload it!
             awsUploader.upload(file, nodeID);
           }
-
-
         }
-
-
-
-
-
-        //var items = e.dataTransfer.items;
-        // for (var i = 0; i < items.length; ++i) { 
-        //   if (items[i].kind != "file")
-        //      continue;
-     
-        //   var entry = items[i].webkitGetAsEntry();    // WebKit/chromium needs 'webkit' prefix (since Chrome 21)
-      
-        //  // import the dropped files/folders into temporary filesystem
-        //  entry.copyTo(temporaryFs.root, entry.name, successCallback, errorCallback);
-        console.log(files)
-
       });
-
-
     }, 200);
-  }
-
-  var a;
+  };
 
   var attachEventListenersToInspector = function() {
     $("#inspector input, #inspector textarea").on("input change paste blur", function(event) {
       var nodes = realtimeModel.outlineNodesAsArray();
       var node = nodes[selectedItem];
       if ($(event.currentTarget).val() !== node[event.currentTarget.id]) {
-
-              console.log("stuff!")
-
         node[event.currentTarget.id] = $(event.currentTarget).val();
         updateLocalTitle(node);
         if (event.currentTarget.id == "synopsis") {
@@ -351,17 +311,17 @@
           updateLocalTimeOfDay(node);
         }
       }
-
-
     });
 
-    // $("#tags").on("focus", function() {
-    //   console.log("IM HERE!!")
-    //   a.open();
-    // });
-
-    // setTimeout(function() {
-
+    $("#inspector #type").on("change", function(event){
+      var nodes = realtimeModel.outlineNodesAsArray();
+      var node = nodes[selectedItem];
+      if ($(event.currentTarget).val().toLowerCase() !== node[event.currentTarget.id]) {
+        node[event.currentTarget.id] = $(event.currentTarget).val().toLowerCase();
+        refreshNode(node.id);
+        selectItem();
+      }
+    });
 
     $('#tags').data({a: new Awesomplete($("#tags")[0], {
         list: $.map(realtimeModel.getIndex('tags').propertyList, function(value, index) { return value.toLowerCase() }),
@@ -408,13 +368,7 @@
         } 
       })
     });
-
-
-
-
-  }
-
-
+  };
 
   var displayNodeHTML = function(obj) {
     var htmlList = [];
@@ -474,34 +428,31 @@
     var yCursor = 0;
     var xCursor = 0;
 
-    //setTimeout(function() {
-      var nodes = realtimeModel.outlineNodesAsArray()
+    var nodes = realtimeModel.outlineNodesAsArray()
 
-      for (var i = 0; i < nodes.length; i++) {
-        if (nodes[i].type == "section" && i !== 0) {
-          yCursor = 0;
-          xCursor += 200+30;
-        }
-
-        if ((yCursor+$("#" + nodes[i].id).outerHeight()+20) > (($( window ).height()/scale)-20)) {
-          yCursor = 23;
-          xCursor += 200+10;          
-        }
-
-        $("#" + nodes[i].id).css("top", yCursor);
-        $("#" + nodes[i].id).css("left", xCursor);
-
-        yCursor += $("#" + nodes[i].id).outerHeight() + 10;
-        $("#" + nodes[i].id).css("visibility", "visible");
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].type == "section" && i !== 0) {
+        yCursor = 0;
+        xCursor += 200+30;
       }
 
-      // MAYBE TAKE THIS OUT?
-      $('body').width((xCursor + 200+30)*scale+30);
+      if ((yCursor+$("#" + nodes[i].id).outerHeight()+20) > (($( window ).height()/scale)-20)) {
+        yCursor = 23;
+        xCursor += 200+10;          
+      }
 
-      $("#right-padding-hack").css("left", xCursor + 200);
+      $("#" + nodes[i].id).css("top", yCursor);
+      $("#" + nodes[i].id).css("left", xCursor);
 
-      return {lastXCursor: xCursor, lastWidth: 200+30};
-    //}, 100);
+      yCursor += $("#" + nodes[i].id).outerHeight() + 10;
+      $("#" + nodes[i].id).css("visibility", "visible");
+    }
+
+    $('body').width((xCursor + 200+30)*scale+30);
+
+    $("#right-padding-hack").css("left", xCursor + 200);
+
+    return {lastXCursor: xCursor, lastWidth: 200+30};
   };
 
   var selectItemByID = function(id) {
@@ -509,8 +460,7 @@
     var node = $.grep(nodes, function(e){ return e.id == id })[0];
     selectedItem = nodes.indexOf(node);
     selectItem();
-  }
-
+  };
 
   var selectItem = function(forceTimeout) {
     var nodes = realtimeModel.outlineNodesAsArray();
@@ -519,7 +469,6 @@
 
     var cNode = $("#" + nodes[selectedItem].id);
     circleBob.ping(cNode.position().left + ((cNode.width()+20)/2)-30+(30*scale), cNode.position().top + (cNode.height()/2)+20)
-
 
     if (nodes[selectedItem].title == "") {
       if ((Date.now()-Number(nodes[selectedItem].id)) < 1000 || forceTimeout) {
@@ -534,7 +483,7 @@
     
     stats.updateStats();
     updateInspectorValues();
-  }
+  };
 
   var goToNextField = function() {
     var fields;
@@ -565,8 +514,6 @@
 
     nextField.toggleClass("hidden", false)
     var length = nextField.text().length;
-    // nextField[0].selectionStart = length;
-    // nextField[0].selectionEnd = length;
     var range = document.createRange();
     range.selectNodeContents(nextField[0])
     var sel = window.getSelection();
@@ -574,24 +521,21 @@
     sel.addRange(range);
     nextField.focus();
     reflowScreen();
-  }
+  };
 
   var deselectEverything = function() {
     var sel = window.getSelection();
     sel.removeAllRanges();
-  }
-
+  };
 
   $('body').keydown(function(event) {
-    //console.log(document.activeElement.nodeName)
-
     if (document.activeElement.contentEditable === true || document.activeElement.nodeName === "INPUT" || document.activeElement.nodeName === "TEXTAREA") {
       
     } else {
       if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 187 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 189 && (event.metaKey || event.ctrlKey))) {
         event.preventDefault();
       }
-      console.log(event)
+      //console.log(event)
     }
 
     var nodes = realtimeModel.outlineNodesAsArray()
@@ -631,7 +575,7 @@
       case 13:
         console.log(preventArrowToggle)
         if ((document.activeElement.nodeName == "INPUT") || (document.activeElement.nodeName == "TEXTAREA") || (document.activeElement.contentEditable == true) || (preventArrowToggle)) {
-          console.log("im on a input!")
+          //console.log("im on a input!")
         } else {
           if (event.shiftKey) {
             goToNextField();
@@ -639,8 +583,6 @@
             addRemoteNode(selectedItem);
           }
         }
-
-
         break;
       // tab
       case 9:
@@ -665,14 +607,7 @@
       // 0 for fullscreen
       case 48:
         if (event.metaKey || event.ctrlKey) {
-          if (document.webkitIsFullScreen) {
-            document.webkitExitFullscreen();
-            setTimeout(scaleToFit, 1000);
-          } else {
-            document.documentElement.webkitRequestFullscreen();
-            setTimeout(scaleToFit, 1000);
-          }
-          
+          toggleFullscreen();
         }
         break;
       case 187: 
@@ -687,15 +622,31 @@
         break;
       case 73:
         if (event.metaKey || event.ctrlKey) {
-          if ($("#inspector").hasClass("hidden")) {
-            $("#inspector").toggleClass("hidden", false);
-          } else {
-            $("#inspector").toggleClass("hidden", true);
-          }
+          toggleInspector();
         }
         break;
     }
   });
+
+  var toggleInspector = function() {
+    if ($("#inspector").hasClass("hidden")) {
+      $("#inspector").toggleClass("hidden", false);
+      toolBarUI.reflow();
+    } else {
+      $("#inspector").toggleClass("hidden", true);
+      toolBarUI.reflow();
+    }
+  };
+
+  var toggleFullscreen = function() {
+    if (document.webkitIsFullScreen) {
+      document.webkitExitFullscreen();
+      setTimeout(scaleToFit, 1000);
+    } else {
+      document.documentElement.webkitRequestFullscreen();
+      setTimeout(scaleToFit, 1000);
+    }
+  };
 
   var scaleToFit = function() {
     console.log("scale to fit")
@@ -721,50 +672,7 @@
     }
   });
 
-  var findOrderAt = function(x, y, ignoreSelectedItem) {
-    // go through all nodes, find x,y and width and height
-    // is xy on the node? great! stop
-    // if not, what is the closest node?
-    var border = (5*scale);
-
-    var nodes = realtimeModel.outlineNodesAsArray()
-
-    var lastFoundColumnItem = null;
-
-    for (var i = 0; i < nodes.length; i++) {
-      if (ignoreSelectedItem && i == selectedItem) {
-      
-      }
-      else {
-        var domNode = $("#" + nodes[i].id);
-
-        var posX = domNode.offset().left;
-        var posY = domNode.offset().top;
-        var width = domNode.outerWidth(true)*scale;
-        var height = domNode.outerHeight(true)*scale;
-
-        if (x >= (posX-border) && x <= (posX + width + border + (22*scale)) && y >= (posY-border) && y <= (posY + height+(100*scale))) {
-          lastFoundColumnItem = i;
-        }
-
-        if (x >= (posX-border) && x <= (posX + width + border) && y >= (posY-border) && y <= (posY + height + border)) {
-          if (x > (posX+(height/2))) {
-            return i + 1
-          } else {
-            return i;
-          }
-        }        
-      }
-    }
-
-    if (!lastFoundColumnItem) {
-      return selectedItem;
-    } else {
-      return lastFoundColumnItem;
-    }
-  };
-
-  var findOrderAt2 = function(x, y, _insertLocation) {
+  var findOrderAt = function(x, y, _insertLocation) {
     var yCursor = 0;
     var xCursor = 0;
 
@@ -851,16 +759,13 @@
   var changeScale = function(amount) {
     var scaleIncrement;
 
-    console.log(scale);
-
-    if (scale <= 1) {
+    if (scale <= 0.9) {
       scaleIncrement = 0.1;
-    } else if (scale > 1 && scale < 2) {
+    } else if (scale > 0.9 && scale < 2) {
       scaleIncrement = 0.2;
     } else {
       scaleIncrement = 0.4;
     }
-
 
     if (amount > 0) {
       scale += scaleIncrement;
@@ -869,40 +774,34 @@
     }
 
     scale = Math.max(scale, 0.1);
+    scale = Math.round10(scale, -1);
 
     $("#canvas").css("transform", "translate3d(0,0,0) scale(" + scale + ")")
     reflowScreen();
   }
 
-  // document ready yo.
+  // document ready.
   $( function() {
 
     $(document).on("mousemove", function(event) {
-      //circleBob.hoverTowards(event.clientX, event.clientY);
       if (dragItem) {
         var scrollOffsetX = $("#canvas-container").scrollLeft();
         dragItem.toggleClass( "dragged", true )
         dragItem.css("top", ((event.pageY-20-dragOffset[1])/scale));
         dragItem.css("left", ((event.pageX-20-dragOffset[0]+scrollOffsetX)/scale));
         $(".title").blur();
-        insertLocation = (findOrderAt2(event.pageX+scrollOffsetX, event.pageY));
-
-        insertLocation = (findOrderAt2(event.pageX+scrollOffsetX, event.pageY, insertLocation));
-
+        insertLocation = (findOrderAt(event.pageX+scrollOffsetX, event.pageY));
+        insertLocation = (findOrderAt(event.pageX+scrollOffsetX, event.pageY, insertLocation));
         reflowScreenReordered(insertLocation);
-
         if (insertLocation !== tempInsert && insertPosition ) {
           circleBob.echo((insertPosition[0])*scale-scrollOffsetX,insertPosition[1]*scale)
         } else {
-          
         }
         tempInsert = insertLocation;
-
       }
     });
 
     $(document).on("mousedown", function(event) {
-      //circleBob.flyTowards(event.clientX, event.clientY);
       circleBob.ping(event.clientX, event.clientY);
     });
 
@@ -921,13 +820,9 @@
         dragItem = null;
         $('.dragged').toggleClass( "dragged", false );
         reflowScreen();
-
-
         selectItem();
-
         insertLocation = null;
         //circleBob.ping((insertPosition[0])*scale-scrollOffsetX,insertPosition[1]*scale)
-
       }
     });
 
@@ -937,28 +832,17 @@
       reflowScreen();
     });
 
-    // $('#toolbar').on("mousemove", function(event) {
-    //   scale = ((event.offsetX+30)/100)*2;
-    //   $("#canvas").css("transform", "translate3d(0,0,0) scale(" + scale + ")")
-    //   reflowScreen();
-    // })
-
     $("html").on("dragover", cancelEvents);
-
     $("html").on("dragleave", cancelEvents);
-
     $("html").on("drop", cancelEvents);
-
     $('#canvas-container').width($(window).width());
     $('#canvas-container').height($(window).height());
-
-
   });
 
   var cancelEvents = function(event) {
     event.preventDefault();  
     event.stopPropagation();
-  }
+  };
 
   var updateImageURL = function(nodeID, imageURL) {
     var nodes = realtimeModel.outlineNodesAsArray();
@@ -966,7 +850,7 @@
     node.imageURL = imageURL;
     refreshNode(nodeID)
     console.log("updating image url: " + imageURL)
-  }
+  };
 
   var refreshNode = function(nodeID) {
     var nodes = realtimeModel.outlineNodesAsArray();
@@ -976,8 +860,7 @@
     attachEventListenersToNode(node.id);
     reflowScreen();
     setTimeout(reflowScreen, 1500);
-    //selectItemByID(node.id);
-  }
+  };
 
   var toggleNodeType = function(index) {
     var nodes = realtimeModel.outlineNodesAsArray();
@@ -988,21 +871,19 @@
     var prevNode = $("#" + node.id);
     var tLoc = prevNode.position();
     circleBob.ping(tLoc.left + (prevNode.width()/2)+30, tLoc.top + (prevNode.height()/2)+40)
-
     prevNode.remove();
     $("#canvas").append(displayNodeHTML(node));
     attachEventListenersToNode(node.id);
     reflowScreen();
-
     selectItem(true);
-  }
+  };
 
   var changeLocalNodeType = function(node) {
     $("#" + node.id).remove();
     $("#canvas").append(displayNodeHTML(node));
     attachEventListenersToNode(node.id);
     reflowScreen();
-  }
+  };
 
   var removeRemoteNode = function(index) {
     var outlineNodes = realtimeModel.outlineNodesAsArray();
@@ -1011,13 +892,13 @@
     reflowScreen();
     selectedItem--;
     selectItem();
-  }
+  };
 
   var removeLocalNode = function(nodeid) {
     $('#' + nodeid).remove();
     reflowScreen();
     selectItem();
-  }
+  };
 
   var addRemoteNode = function(index) {
     console.log("adding remote!")
@@ -1027,34 +908,33 @@
     reflowScreen();
     selectedItem++;
     selectItem();
-  }
+  };
 
   var addLocalNode = function(node) {
     $("#canvas").append(displayNodeHTML(node));
     attachEventListenersToNode(node.id);
     reflowScreen();
     selectItem();
-  }
+  };
 
   var updateLocalTitle = function(node) {
     $("#" + node.id + " .title").text(node.title);
-  }
+  };
 
   var updateLocalSynopsis = function(node) {
     $("#" + node.id + " .synopsis").toggleClass("hidden", false);
     $("#" + node.id + " .synopsis").text(node.synopsis);
-  }
+  };
 
   var updateLocalSetting = function(node) {
     $("#" + node.id + " .setting").toggleClass("hidden", false);
     $("#" + node.id + " .setting").text(node.setting);
-  }
+  };
 
   var updateLocalTimeOfDay = function(node) {
     $("#" + node.id + " .time-of-day").toggleClass("hidden", false);
     $("#" + node.id + " .time-of-day").text(node.timeOfDay);
-  }
-
+  };
 
   var screenshot = function(callbackfunction) {
     var newDiv = $('<div style="opacity: 0.0; position: fixed;"></div>');
@@ -1078,19 +958,15 @@
       allowTaint: false,
       useCORS: true
     });
-  }
+  };
 
   var shareDialogue = function() {
-
     init = function() {
-        var s = new gapi.drive.share.ShareClient('25911058412');
-        s.setItemIds([ realtimeModel.getID() ]);
+      var s = new gapi.drive.share.ShareClient('25911058412');
+      s.setItemIds([ realtimeModel.getID() ]);
     }
-    
     gapi.load('drive-share', init);
-
-
-  }
+  };
 
   var filterTags = function(tags) {
     // turn all nodes dark
@@ -1105,23 +981,17 @@
         $("#" + nodes[i]).toggleClass("dim", false);
         $("#" + nodes[i] + " .label-container").append('<div style="background-color: ' + tinycolor(outlinerUtils.stringToAscii(tags[z])).desaturate(10).brighten(10).toHexString() + '; border-left: 3px solid ' + tinycolor(outlinerUtils.stringToAscii(tags[z])).toHexString() + ';">' + tags[z] + '</div>');
       }
-
-
     }
-
-
-
-    // color them right
-  }
+  };
 
   var preventArrows = function() {
     preventArrowToggle = true;
     setTimeout(function(){ preventArrowToggle = true; }, 400);
-  }
+  };
 
   var releaseArrows = function() {
     setTimeout(function(){ preventArrowToggle = false; }, 100);
-  }
+  };
 
   var updateAutocomplete = function(property) {
 
@@ -1149,20 +1019,11 @@
         updateList(property);
       } else {
         updateList(property);
-
-        // setTimeout(function() {
-        //   console.log("UPDATING" + property)
-        //   updateList(property);
-        // },1000)
       }
     }
-
-
-  }
-
+  };
 
   window.outlinerApp = {
-    init: init,
     load: load,
     addLocalNode: addLocalNode,
     removeLocalNode: removeLocalNode,
@@ -1181,178 +1042,12 @@
     filterTags: filterTags,
     preventArrows: preventArrows,
     releaseArrows: releaseArrows,
+    changeScale: changeScale,
+    toggleFullscreen: toggleFullscreen,
+    toggleInspector: toggleInspector,
     updateAutocomplete: updateAutocomplete,
     getCurrentSelection: function() { return selectedItem; },
     twoplus: function() { return 2+2; }
   };
 
-
-
 }).call(this);
-
-
-
-
-
-
-
-
-
-
-
-
-// $(function() {
-
-
-
-
-
-//   var buttonHeldIntervalID;
-
-//   document.addEventListener('gamepadButtonDown', function (event) { 
-//     switch (event.detail.button) {
-//       case 0:
-//         toggleNodeType(selectedItem);
-//         break;
-
-//       case 13:
-//         selectedItem++;
-//         $(".selected").toggleClass("selected", false)
-//         $("#" + nodes[selectedItem].id).toggleClass( "selected", true );
-
-//         break;
-//       case 12:
-//         selectedItem--;
-//         $(".selected").toggleClass("selected", false)
-//         $("#" + nodes[selectedItem].id).toggleClass( "selected", true );
-//         break;
-//       case 6:
-//         clearInterval(buttonHeldIntervalID);
-//         buttonHeldIntervalID = window.setInterval(lTriggerDown, 20);
-//         break;
-//       case 7:
-//         clearInterval(buttonHeldIntervalID);
-//         buttonHeldIntervalID = window.setInterval(rTriggerDown, 20);
-//         break;
-
-
-
-//     }
-
-//     console.log(event.detail.button) 
-//   }, false);
-
-//   document.addEventListener('gamepadButtonUp', function (event) { 
-//     switch (event.detail.button) {
-//       case 6:
-//         clearInterval(buttonHeldIntervalID);
-//         break;
-//       case 7:
-//         clearInterval(buttonHeldIntervalID);
-//         break;
-//     }
-//   }, false);
-
-//   var axesIntervalID = [];
-
-//   document.addEventListener('gamepadAxesStart', function (event) { 
-//     console.log("START")
-//     switch (event.detail.axes) {
-//       case 0:
-//         clearInterval(axesIntervalID[0])
-//         axesIntervalID[0] = window.setInterval(scrollWindowAxes, 15, 0)
-//         break;
-//       case 1:
-//         clearInterval(axesIntervalID[1])
-//         axesIntervalID[1] = window.setInterval(scrollWindowAxes, 15, 1)
-//         break;
-//     }
-//   }, false);
-
-//   document.addEventListener('gamepadAxesStop', function (event) { 
-//     console.log("STOPPPP")
-//     switch (event.detail.axes) {
-//       case 0:
-//         clearInterval(axesIntervalID[0]);
-//         break;
-//       case 1:
-//         clearInterval(axesIntervalID[1]);
-//         break;
-//     }
-//   }, false);
-
-//   var lTriggerDown = function() {
-//     //console.log(gamepad.buttons[6])
-//     changeScale(1-(gamepad.buttons[6].value/20));
-//   }
-
-//   var rTriggerDown = function() {
-//     changeScale(1+(gamepad.buttons[7].value/20));
-//   }
-
-
-//   var scrollPosition = [0,0];
-
-
-//   var scrollWindowAxes = function(axes) {
-//     console.log(scrollPosition)
-//     console.log(gamepad.axes[axes])
-
-//     scrollPosition[axes] = scrollPosition[axes] + (gamepad.axes[axes]*50)
-
-//     if (axes) {
-//       $('body').scrollTop(scrollPosition[axes])
-//     } else {
-//       $('body').scrollLeft(scrollPosition[axes])
-//     }
-   
-//   }
-
-
-
-//   $('body').keydown(function(event) {
-//     if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9) {
-//       event.preventDefault();
-//     }
-
-//     console.log( event );
-
-//     switch (event.keyCode) {
-//       case 40: 
-//         selectedItem++;
-//         $(".selected").toggleClass("selected", false)
-//         $("#" + nodes[selectedItem].id).toggleClass( "selected", true );
-
-//         break;
-//       case 38:
-//         selectedItem--;
-//         $(".selected").toggleClass("selected", false)
-//         $("#" + nodes[selectedItem].id).toggleClass( "selected", true );
-//         break;
-//       case 13:
-//         addNode(selectedItem);
-//         break;
-//       case 9:
-//         toggleNodeType(selectedItem);
-//         break;
-//       case 27:
-//         console.log(JSON.stringify(nodes));
-//         break;
-//       case 82:
-//         reflowScreen();
-//         break;
-//     }
-//   });
-
-
-//   var changeScale = function(amount) {
-//     scale = scale * amount;
-//     $("#canvas").css("transform", "translate3d(0,0,0) scale(" + scale + ")")
-//     reflowScreen();
-
-//   }
-
-
-
-
-

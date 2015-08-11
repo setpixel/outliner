@@ -10,11 +10,13 @@ var gamepadObj = {};
 var rAF = window.requestAnimationFrame;
 
 var initGamepad = function() {
-	if (navigator.getGamepads()[0]) {
-		//console.log("FOUND GAMEPAD!!!")
-		//gamepad = navigator.getGamepads()[0];
-		rAF(updateStatus)
-	}
+	if (navigator.getGamepads){
+    if (navigator.getGamepads()[0]) {
+      //console.log("FOUND GAMEPAD!!!")
+      //gamepad = navigator.getGamepads()[0];
+      rAF(updateStatus)
+    }  
+  }
 }
 
 

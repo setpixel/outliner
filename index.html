@@ -16,7 +16,7 @@
     <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script src="js/tinycolor.js"></script> 
     <script src="js/awesomplete.js"></script> 
-    <script src="js/utils.js"></script> 
+    <script src="js/outlinerutils.js"></script> 
     <script src="js/gamepad.js"></script> 
     <script src="js/realtimeModel.js"></script>
     <script src="js/stats.js"></script>
@@ -24,109 +24,74 @@
     <script src="js/circlebob.js"></script>
     <script src="js/html2canvas.min.js" async></script> 
     <script src="js/main.js"></script> 
+    <script src="js/chatwindow.js" async></script> 
+    <script src="js/scriptdoctor.js" async></script> 
+    <script src="js/namesdb.js" async></script> 
+    <script src="js/toolbarui.js" async></script> 
+
     <div id="inspector" class="hidden">
-      <h1>Edit some shit.</h1>
+      <select id="type">
+        <option>Section</option>
+        <option selected>Beat</option>
+        <option>Scene</option>
+        <option>Note</option>
+      </select>
       <input type="text" id="title" placeholder="Title">
       <textarea name="" id="synopsis" placeholder="Synopsis" rows="3"></textarea>
       <input type="text" id="imageURL" placeholder="Image URL">
       <input type="text" id="setting" class="setting" placeholder="Setting">
       <input type="text" id="timeOfDay" class="timeOfDay" placeholder="Time of day">
-      <textarea id="text" placeholder="Full text" rows="5"></textarea>
+      <textarea id="text" placeholder="Script text" rows="5"></textarea>
       <input id="tags" class="tags" placeholder="Tags">
-      <input id="actors" class="actors" placeholder="Actors">
+      <input id="actors" class="actors" placeholder="Characters">
       <input id="duration" name="" placeholder="Duration in seconds">
-<!--       type
-      title
-      synopsis
-      imageURL
-      setting
-      timeOfDay
-      text
-      time (for timeline)
-      tags [list]
-      actors
-      duration (of node)
-      color -->
+      <input id="completion" name="" placeholder="Completion %">
     </div>        
-
-<datalist id="frameworks">
-  <option value="MooTools">
-  <option value="Moobile">
-  <option value="Dojo Toolkit">
-  <option value="jQuery">
-  <option value="YUI">
-</datalist>
-
-
 
     <div id="help" class="hidden">
       <h3>See the whole picture!</h3>
-
       <span>To zoom in press:</span>
       <div class="key">command</div> + <div class="key">+</div>      
-
       <span>To zoom out press:</span>
       <div class="key">command</div> + <div class="key">-</div>      
-
-
     </div>
 
+    <div id="toolbarbg"></div>
     <div id="toolbar">
       <img src="img/outlinerlogo.png" class="logo">
-
-      <ul>
-        <li>Import</li>
-        <li>Export</li>
-      </ul>
-
-
-
-
-      <ul>
-        <li>Add Node</li>
-        <li>Delete Node</li>
-        <li>Toggle Node</li>
-      </ul>
-
-
-
-      <ul>
-        <li>Outline</li>
-        <li>Timeline</li>
-        <li>Edit list</li>
-        <li>Presentation</li>
-      </ul>
-
-      <ul>
-        <li>Flight</li>
-        <li>Love</li>
-        <li>Comedy</li>
-        <li>Conflict</li>
-        <li>VFX</li>
-      </ul>
-
-      <ul>
-        <li>Inspector</li>
-      </ul>
-
-      <ul>
-        <li>Zoom -</li>
-        <li>Zoom +</li>
-        <li>Fullscreen</li>
-      </ul>
-
-
-
-
+      <div class="block left">
+        <ul>
+          <li>Outline</li>
+          <li>Timeline</li>
+          <li>Edit list</li>
+          <li>Presentation</li>
+        </ul>
+      </div>
+      
+      <div class="block right">
+        <ul>
+          <li id="toolbar-inspector">Inspector</li>
+        </ul>
+        <ul>
+          <li id="toolbar-zoom-out">Zoom -</li>
+          <li id="toolbar-zoom-in">Zoom +</li>
+          <li id="toolbar-fullscreen">Fullscreen</li>
+        </ul>
+      </div>
     </div>
-
     <div id="circle-bob"></div>
 
     <div id="stats">
     </div>
 
-    <div id="canvas-container">
+    <div id="chatwindow">
+      <div class="minimizebutton"><span></span></div>
+      <div id="chatoutput">
+      </div>
+      <input id="chatinput" placeholder="Chat here...">
+    </div>
 
+    <div id="canvas-container">
         <div id="auth_window" class="hidden">
           <img src="img/outlinerlogo.png" class="logo">
           Hi there!<br/><br/>

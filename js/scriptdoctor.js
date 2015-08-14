@@ -231,6 +231,18 @@
     //console.log("scriptDoctor: " + string);
     
     chatWindow.addChatLine("Script Dr. " + doctorName, string)
+    
+    if (string.slice(-1) == "?") {
+      speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + "? ");
+    } else if (string.slice(-2) == "...") {
+      speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '').replace("...", ".") + " ");
+    } else if (string.slice(-1) == ".") {
+      speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + " ");
+    } else if (string.slice(-1) == "!") {
+      speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + " ");
+    } else {
+      speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + ". ");
+    }
 
     if (!awaitTimer) {
       checkOutput();
@@ -373,7 +385,7 @@
 
   var tellTour = function() {
     var help = [
-      "This is an outlinging tool called <strong>Outliner</strong>.",
+      "This is an outlining tool called <strong>Outliner</strong>.",
       "It's a tool to allow you to quickly sequence story ideas and organize them well.", 
       "At the most basic level, outlining is all about creating and moving around nodes", 
       "just like you would outline a story with index cards and put them on the wall.", 
@@ -484,6 +496,13 @@
         break;
       case "tour":
         tellTour();
+        break;
+      case "read":
+        speech.speakFromNode();
+        break;
+      case "stop":
+        speech.stop();
+        queOutput("Alright.");
         break;
       case "specificquestion":
         for (var i = 0; i < specificQuestions.length; i++) {
@@ -726,7 +745,7 @@
     // emote
     var greetingStrings = ["hi", "hello", "sup", "yo", "hey"];
     var thanksStrings = ["thank", "thanks"];
-    var commandStrings = ["need", "idea", "help", "joke", "tour", "shut"];
+    var commandStrings = ["need", "idea", "help", "joke", "tour", "shut", "read", "stop"];
     var laughStrings = ["heh", "ha", "hah", "haha", "lol", "lul", "lolz", "lols", "rofl", "hahaha"];
     var positiveStrings = [":)", ":D", "xD", "yay", "hooray", "awesome"];
     var negativeStrings = [":(", ":/"];

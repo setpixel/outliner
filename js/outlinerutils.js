@@ -21,8 +21,8 @@
 	var generateColors = function() {
 		for (var i = 0; i < baseColors.length; i++) {
 			colorList.push(tinycolor(baseColors[i]).toHexString());
+			colorList.push(tinycolor(baseColors[i]).darken(20).toHexString());
 			colorList.push(tinycolor(baseColors[i]).brighten(20).toHexString());
-			colorList.push(tinycolor(baseColors[i]).brighten(30).toHexString());
 			colorList.push(tinycolor(baseColors[i]).desaturate(15).toHexString());
 		}
 	}

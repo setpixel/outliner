@@ -10,19 +10,6 @@
 
   var restoreLoc;
 
-  $("#chatinput").keydown(function(e){
-    console.log(e)
-
-    if (e.keyCode == 13) {
-      addChatLine("charles", $('#chatinput').val());
-      scriptDoctor.input($('#chatinput').val());
-      $('#chatinput').val('');
-    }
-
-
-
-  })
-
   var scrollToBottom = function(){
     var scrollHeight = $("#chatoutput")[0].scrollHeight;
     $("#chatoutput").scrollTop(scrollHeight);
@@ -51,18 +38,7 @@
     toolBarUI.reflow();
   }
 
-  var init = function() {
-    $("#chatwindow").css("left", $(window).width()-$("#chatwindow").width()-60);
-    $("#chatwindow").css("top", 20);
-  }
-
-  init();
-
   var addChatLine = function(screenname, text) {
-
-
-
-
     var html = [];
 
     if (lastScreenName == screenname) {
@@ -76,31 +52,57 @@
     scrollToBottom();
   };
 
-  $("#chatwindow .minimizebutton").on("click", function(event){
-    minimize();
-  })
 
-  $("#chatwindow").on("mousedown", function(event) {
-    if (minimized) {
-      restore();
-    } else {
-      dragged = true;
-      dragOffset = [event.clientX - $("#chatwindow").offset().left, event.clientY - $("#chatwindow").offset().top]
+  $( function() {
+
+    var init = function() {
+      $("#chatwindow").css("left", $(window).width()-$("#chatwindow").width()-60);
+      $("#chatwindow").css("top", 20);
+      minimize();
+      setTimeout(function(){$("#chatwindow").css("opacity", '')}, 2000)
     }
-  });
 
-  $(window).on("mouseup", function(event) {
-    dragged = false;
-    $("#chatwindow").toggleClass("dragged", false);
-    console.log(event)
-  });
+    $("#chatwindow").css("opacity", 0);
 
-  $(window).on("mousemove", function(event){
-    if (dragged) {
-      $("#chatwindow").toggleClass("dragged", true);
-      $("#chatwindow").css("left", event.clientX - dragOffset[0]);
-      $("#chatwindow").css("top", event.clientY - dragOffset[1]);
-    }
+
+
+
+    init();
+
+    $("#chatinput").keydown(function(e){
+      if (e.keyCode == 13) {
+        addChatLine("charles", $('#chatinput').val());
+        scriptDoctor.input($('#chatinput').val());
+        $('#chatinput').val('');
+      }
+    })
+
+    $("#chatwindow .minimizebutton").on("click", function(event){
+      minimize();
+    })
+
+    $("#chatwindow").on("mousedown", function(event) {
+      if (minimized) {
+        restore();
+      } else {
+        dragged = true;
+        dragOffset = [event.clientX - $("#chatwindow").offset().left, event.clientY - $("#chatwindow").offset().top]
+      }
+    });
+
+    $(window).on("mouseup", function(event) {
+      dragged = false;
+      $("#chatwindow").toggleClass("dragged", false);
+    });
+
+    $(window).on("mousemove", function(event){
+      if (dragged) {
+        $("#chatwindow").toggleClass("dragged", true);
+        $("#chatwindow").css("left", event.clientX - dragOffset[0]);
+        $("#chatwindow").css("top", event.clientY - dragOffset[1]);
+      }
+    });
+
   });
 
   window.chatWindow = {

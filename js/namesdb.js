@@ -45,9 +45,10 @@
     return name;
   };
 
-  var getLastName = function(lowerBound, upperBound) {
+  var getLastName = function(lowerBound, upperBound, startsWith) {
     var name;
-
+    var source;
+    
     if (lowerBound && upperBound) {
 
     } else {
@@ -55,7 +56,18 @@
       upperBound = 0.4;
     }
 
-    name = lastNames.randomElementByPercentage(lowerBound, upperBound);
+    source = lastNames;
+
+    if (startsWith) {
+      startsWith = startsWith.toUpperCase();
+      source = $.map(lastNames, function(v){ 
+        if (v.startsWith(startsWith)) { 
+          return v; 
+        }
+      });
+    }
+
+    name = source.randomElementByPercentage(lowerBound, upperBound);
   
     return name;
   };

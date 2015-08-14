@@ -133,9 +133,9 @@ body{
   margin-right: 10px;
 */  
   box-sizing: border-box;
-  transition: transform 200ms ease, top 200ms ease, left 200ms ease;
+  transition: transform 200ms ease, top 200ms ease, left 200ms ease, opacity 200ms ease;
 
-  box-shadow: 0px 1px 0px 0px rgba(0,0,0,0.76);
+  box-shadow: 0px 1px 0px 0px rgba(0,0,0,0.36);
   /*z-index: 500;*/
 }
 
@@ -267,7 +267,7 @@ h2 {
 
 .card.dim {
   opacity: 0.2;
-  transition: opacity 200ms ease;
+  transition: transform 200ms ease, top 200ms ease, left 200ms ease, opacity 200ms ease;
 }
 
 .card .label-container {
@@ -343,10 +343,74 @@ h2 {
   background-color: rgba(255,255,255,0.9);
   display: block;
   position: fixed;
-  padding: 20px;
+  padding: 0 20px;
   box-shadow: -1px 0px 3px 0px rgba(0,0,0,0.3);
   visibility: visible;
 }
+
+#inspector .close-button {
+  display: inline-block;
+  position: absolute;
+  color: #aaa;
+  width: auto;
+  padding: 5px 5px;
+  border: 0px solid #aaa;
+  margin: 20px 0;
+  right: 20px;
+  top: 0px;
+  opacity: 0.3;
+}
+
+#inspector .close-button:hover {
+  opacity: 0.5;
+}
+
+#inspector ul.tabs {
+  position: relative;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: inline-block;
+  margin: 20px 0 20px 0;
+  width: 100%;
+  /*border-bottom: 1px solid #aaa;*/
+}
+
+#inspector .tabs li {
+  color: #aaa;
+  float: left;
+  width: auto;
+  padding: 10px 30px;
+  border: 1px solid #aaa;
+  border-right: 0;
+  cursor: default;
+
+}
+
+#inspector .tabs li:first-child {
+  border-radius: 5px 0 0 5px;
+}
+
+#inspector .tabs li:last-child {
+  border-radius: 0 5px 5px 0;
+  border-right: 1px solid #aaa;
+}
+
+#inspector .tabs li.select {
+  color: #fff;
+  background-color: rgba(0,0,0,0.2);
+}
+
+#inspector .tabs li.select:hover {
+  color: #fff;
+  background-color: rgba(0,0,0,0.2);
+}
+
+#inspector .tabs li:hover {
+  background-color: rgba(0,0,0,0.03);
+}
+
 
 #inspector h1 {
   font-weight: 700;
@@ -367,20 +431,25 @@ h2 {
   box-sizing: border-box;
   font-size: 20px;
   text-align: bottom;
-  color: #666;
+  color: #333;
 }
+
+#inspector ::-webkit-input-placeholder {
+  color: rgba(0,0,0,0.3);
+}
+
 
 #inspector #title {
   font-size: 28px;
   font-weight: 700;
-  color: #666;
+  color: #333;
 }
 
 #inspector #text {
   font-family: 'courierprime';
   font-size: 12px;
   font-weight: 100;
-  color: #666;
+  color: #333;
 }
 
 #setting, #timeOfDay {
@@ -402,6 +471,56 @@ h2 {
 /*  background: url(http://www.stackoverflow.com/favicon.ico) 96% / 15% no-repeat #eee;
 */}
 
+#inspector .filter-item {
+  font-size: 14px;
+  position: relative;
+  padding: 8px 10px;
+  display: block;
+  float: left;
+  border-radius: 4px;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  margin-right: 8px;
+  margin-bottom: 8px;
+  text-transform: capitalize;
+  opacity: 0.4;
+  cursor: default;
+}
+
+#inspector .filter-item:hover {
+  opacity: 0.8;
+}
+
+#inspector .filter-item.selected {
+  opacity: 1;
+  box-shadow: 0px 0px 0px 3px #a0d3f0;
+}
+
+#inspector .filter-item.not-selected {
+  opacity: 0.4;
+}
+
+
+#inspector .item-count {
+  color: rgba(0,0,0,0.6);
+  position: relative;
+  display: inline;
+  top: 0px;
+  font-size: 10px;
+  padding: 3px;
+  margin-left: 5px;
+  border-radius: 3px;
+}  
+
+#inspector .content-section {
+  display: block;
+  margin-bottom: 20px;
+  clear: both;
+}
+
+#inspector .content-section h3 {
+  margin-bottom: 10px;
+}
+
 
 #toolbarbg {
   display: block;
@@ -413,6 +532,7 @@ h2 {
   height: 250px;
   opacity: 0.3;
   transition: opacity 500ms ease;
+  pointer-events: none;
 }
 
 #toolbar {
@@ -424,7 +544,7 @@ h2 {
   bottom: 0px;
   width: 100%;
   height: 70px;
-    -webkit-touch-callout: none;
+  -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;
@@ -445,12 +565,13 @@ h2 {
 
 #toolbar.active .logo {
   opacity: 1;
-  transition: opacity 200ms ease;
+  transition: opacity 300ms ease;
 }
 
 #toolbar .block {
   display: block;
   position: absolute;
+  transition: left 400ms ease;
 }
 
 
@@ -488,7 +609,7 @@ h2 {
 #toolbar li:hover {
   opacity: 1;
   background-color: rgba(255,255,255,0.0);
-  cursor:pointer;
+  cursor: default;
 }
 
 #toolbar li:first-child {
@@ -534,6 +655,10 @@ h2 {
   height: 2000px;
 }
 
+#canvas-container::-webkit-scrollbar {
+ display: none;
+}
+
 #right-padding-hack {
   display: block;
   position: absolute;
@@ -551,8 +676,15 @@ h2 {
   text-shadow: 0px 1px 0px rgba(0,0,0,0.3); 
   position: fixed;
   bottom: 0px;
+  right: 0px;
   text-align: right;
   padding: 20px;
+  z-index: 99999;
+}
+
+#stats.black {
+  color: rgba(0,0,0,0.4);
+  text-shadow: none; 
 }
 
 #help {
@@ -639,12 +771,12 @@ h2 {
   position: absolute;
   width: 350px;
   height: 450px;
-  z-index: 999;
+  z-index: 9999;
   border-radius: 8px;
   right: 30px;
   top: 30px;
   overflow: hidden;
-  transition: width 500ms ease, height 300ms ease, background-color 500ms ease, top 300ms ease, left 300ms ease, transform 100ms ease;
+  transition: width 500ms ease, height 300ms ease, background-color 500ms ease, top 300ms ease, left 300ms ease, transform 100ms ease, opacity 100ms ease;
 }
 
 #chatwindow.minimized {
@@ -655,7 +787,7 @@ h2 {
   bottom: 12px;
   padding: 10px;
   background-color: rgba(0,0,0,0.3);
-  transition: width 500ms ease, height 300ms ease, background-color 500ms ease, top 500ms ease, left 500ms ease;
+  transition: width 500ms ease, height 300ms ease, background-color 500ms ease, top 500ms ease, left 500ms ease, opacity 100ms ease;
 }
 
 #chatwindow.dragged {
@@ -663,10 +795,18 @@ h2 {
   transition: transform 100ms ease;
 }
 
+
+#chatoutput::-webkit-scrollbar {
+ display: none;
+}
+ 
+
 #chatoutput {
   color: rgb(255,255,255);
   height: 375px;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: scroll;
+
 /*  -webkit-touch-callout: text;
   -webkit-user-select: text;
   -khtml-user-select: text;
@@ -746,6 +886,57 @@ h2 {
 #chatwindow.minimized #chatinput {
   visibility: hidden;
 }
+
+#context-menu {
+  background-color: #eee;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 999;
+  margin-top: 10px;
+  margin-left: 10px;
+  /*border: 1px solid rgba(0,0,0,0.3);*/
+  box-shadow: 0px 2px 0px 1px rgba(0,0,0,0.1), 0px 2px 3px 0px rgba(0,0,0,0.3);
+  cursor: default;
+  transform: translate3d(0,0,0) scale(1);
+  transform-origin: top left;
+  opacity: 1;  
+  transition: transform 100ms ease, opacity 100ms ease;
+
+}
+
+#context-menu.hidden {
+  transform: translate3d(0,0,0) scale(.9);
+  transform-origin: top left;
+  transition: transform 100ms ease, opacity 100ms ease;
+  opacity: 0;
+  display: block !important;
+}
+
+
+#context-menu div {
+  color: #555;
+  font-size: 15px;
+  padding: 6px 15px;
+}
+
+#context-menu div:hover {
+  background-color: rgba(0,0,0,0.1);
+}
+
+#context-menu hr {
+  border: 0;
+  border-bottom: 1px dotted rgba(0,0,0,0.3);
+}
+
+
+.filter-content .content-section h3 {
+  font-size: 20px;
+}
+
+.filter-content .content-section span {
+  color: rgba(0,0,0,0.7);
+}
+
 
 
 

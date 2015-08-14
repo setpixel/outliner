@@ -15,38 +15,66 @@
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script src="js/tinycolor.js"></script> 
+    <script src="js/speech.js"></script> 
+    <script src="js/contextmenu.js"></script> 
     <script src="js/awesomplete.js"></script> 
     <script src="js/outlinerutils.js"></script> 
     <script src="js/gamepad.js"></script> 
-    <script src="js/realtimeModel.js"></script>
+    <script src="js/chatwindow.js"></script> 
+    <script src="js/inspectorwindow.js"></script> 
+    <script src="js/toolbarui.js"></script> 
+    <script src="js/scriptdoctor.js"></script> 
     <script src="js/stats.js"></script>
+    <script src="js/realtimeModel.js"></script>
     <script src="js/awsuploader.js"></script>
     <script src="js/circlebob.js"></script>
-    <script src="js/html2canvas.min.js" async></script> 
     <script src="js/main.js"></script> 
-    <script src="js/chatwindow.js" async></script> 
-    <script src="js/scriptdoctor.js" async></script> 
+    <script src="js/html2canvas.min.js" async></script> 
     <script src="js/namesdb.js" async></script> 
-    <script src="js/toolbarui.js" async></script> 
 
     <div id="inspector" class="hidden">
-      <select id="type">
-        <option>Section</option>
-        <option selected>Beat</option>
-        <option>Scene</option>
-        <option>Note</option>
-      </select>
-      <input type="text" id="title" placeholder="Title">
-      <textarea name="" id="synopsis" placeholder="Synopsis" rows="3"></textarea>
-      <input type="text" id="imageURL" placeholder="Image URL">
-      <input type="text" id="setting" class="setting" placeholder="Setting">
-      <input type="text" id="timeOfDay" class="timeOfDay" placeholder="Time of day">
-      <textarea id="text" placeholder="Script text" rows="5"></textarea>
-      <input id="tags" class="tags" placeholder="Tags">
-      <input id="actors" class="actors" placeholder="Characters">
-      <input id="duration" name="" placeholder="Duration in seconds">
-      <input id="completion" name="" placeholder="Completion %">
-    </div>        
+      <ul class="tabs">
+        <li class="select" id="inspector-tab">Inspector</li>
+        <li id="filter-tab">Filter</li>
+        <li id="story-tab">Story Ideas</li>
+      </ul>
+
+      <div class="close-button">
+        <img src="img/close.svg">
+      </div>
+      
+      <div class="content inspector-content">
+        <select id="type">
+          <option>Section</option>
+          <option selected>Beat</option>
+          <option>Scene</option>
+          <option>Note</option>
+        </select>
+        <input type="text" id="title" placeholder="Title">
+        <textarea name="" id="synopsis" placeholder="Synopsis" rows="3"></textarea>
+        <input type="text" id="imageURL" placeholder="Image URL">
+        <input type="text" id="setting" class="setting" placeholder="Setting">
+        <input type="text" id="timeOfDay" class="timeOfDay" placeholder="Time of day">
+        <textarea id="text" placeholder="Script text" rows="5"></textarea>
+        <input id="tags" class="tags" placeholder="Tags">
+        <input id="actors" class="actors" placeholder="Characters">
+        <input id="duration" name="" placeholder="Duration in seconds">
+        <input id="completion" name="" placeholder="Completion %">
+      </div>        
+
+      <div class="content filter-content hidden">
+        <div class="content-section filter-tags">
+          <h3>Tags</h3>
+        </div>
+        <div class="content-section filter-setting">
+          <h3>Locations</h3>
+        </div>
+        <div class="content-section filter-actors">
+          <h3>Characters</h3>
+        </div>
+      </div>        
+
+    </div>
 
     <div id="help" class="hidden">
       <h3>See the whole picture!</h3>
@@ -81,10 +109,14 @@
     </div>
     <div id="circle-bob"></div>
 
+    <div id="context-menu" class="hidden">
+    </div>
+
+
     <div id="stats">
     </div>
 
-    <div id="chatwindow">
+    <div id="chatwindow" style="opacity: 0;">
       <div class="minimizebutton"><span></span></div>
       <div id="chatoutput">
       </div>

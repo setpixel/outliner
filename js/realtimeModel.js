@@ -416,6 +416,11 @@ TODO
     setTimeout(function(){stats.updateStats();}, 1000);
     //console.log("Created index for: " + property)
     // console.log(indices[property])
+
+    //console.log(inspectorWindow.twoplus())
+
+    inspectorWindow.renderFilters()
+
     return indices[property];
   };
 

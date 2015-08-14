@@ -7,22 +7,25 @@
 
   var reflow = function() {
     var toolBarWidth = $(window).width();
-    if ($("#inspector").hasClass("hidden")) {
-      $("#stats").css("right", 0);
-    } else {
+    var chatOffset;
+    if (inspectorWindow.visible()) {
       toolBarWidth -= 450+40;
-      $("#stats").css("right", 450+40);
+      chatOffset = 320;
+
+    } else {
+      chatOffset = 550;
     }
 
     var windowHeight = $(window).height();
     // remove some if inspector opened
 
     if (chatWindow.minimized()) {
-      $("#chatwindow").css("left", toolBarWidth-300-250);
+      
+      $("#chatwindow").css("left", toolBarWidth-chatOffset);
       $("#chatwindow").css("top", windowHeight-55);
-      $("#toolbar .block.right").css("left", toolBarWidth-300-350-300);
+      $("#toolbar .block.right").css("left", toolBarWidth-chatOffset-400);
     } else {
-      $("#toolbar .block.right").css("left", toolBarWidth-300-350);
+      $("#toolbar .block.right").css("left", toolBarWidth-chatOffset-100);
     }
 
 
@@ -71,7 +74,7 @@
 
 
     $("#toolbar-inspector").on("click", function() {
-      outlinerApp.toggleInspector();
+      inspectorWindow.toggle();
     });
 
     $("#toolbar-zoom-out").on("click", function() {
@@ -90,13 +93,9 @@
     reflow();
   });
 
-
-
   window.toolBarUI = {
     reflow: reflow,
     twoplus: function() { return 2+2; }
   };
-
-
 
 }).call(this);

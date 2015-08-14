@@ -1,34 +1,57 @@
 /*
 
   TODAYS
-    hook up type change
-    relayout inspector
-    listen for image load for reflow
+    scroll to position on selected item
+    kochai: there's an issue when you keep deleting notes and you get to delete the last one on the top left, after that you can't go to another note to delete it until refreshing the page
+    //scale to fit better!!!!
+    filtering
+      plural
+      if 0
+      no tags, no location, no characters?
+      duration
+      completion
+
+    //filter by any index
+    right click context menu:
+      add node after
+      delete
+      inspect
+      speak from here
+      zoom to fit
+      
+    //listen for image load for reflow
+    show completion info
+    //fix scrollbars
+    figure out collaboration focus bug
+    optimize reordering (dont set all dom css if not changed, index node locs and heights and widths)
+    user set background
+    //hook up type change
+    //relayout inspector
     //auto on card
     //dump on window close
     //update stats
-    filter by any index
-    user set background
-    completion metadata
-    fix scrollbars
-    figure out collaboration focus bug
-    figure out safari bug
+    //completion metadata
+    //figure out safari bug
+    //Save to google drive / import from google drive
 
   HIGHLEVEL
-    //Save to google drive / import from google drive
+    MOBILE VIEW
     UNDO
     INSPECTOR
-      make look nice: 
-        font sizes
-        resize text areas
-        awecomplete
-        ui to close window
+      story ideas
+      //make look nice: 
+      //  font sizes
+      //  resize text areas
+      //  awecomplete
+      //  ui to close window
     FILTERING
-      add tags
-      ability to show nodes that have tags
-      tag coloring?
+      //add tags
+      //ability to show nodes that have tags
+      //tag coloring?
     UI
+      fix overlap on small screens
     Printing
+      output 
     VIEWS
       Presentation view
       Timeline view
@@ -40,8 +63,6 @@
       chat
     Speech playback
     script doctor
-
-
 
   TODAYS BUGS:
     make a mode to always scale to fit
@@ -200,6 +221,16 @@
   var attachEventListenersToNode = function(nodeID) {
     setTimeout(function() {
 
+      reflowScreen();
+
+      setTimeout(reflowScreen, 100);
+
+
+      $("#" + nodeID + " img").load(function(){
+        console.log("image loaded!!!");
+        reflowScreen();
+      });
+
       $("#" + nodeID + " .title").on("input", function(event) {
         var nodes = realtimeModel.outlineNodesAsArray();
         var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.id })[0];
@@ -214,7 +245,7 @@
         updateInspectorValues();
       });
 
-      $("#" + nodeID + " .setting").on("input change paste blur", function(event) {
+      $("#" + nodeID + " .setting").on("input change paste blur awesomplete-select", function(event) {
         var nodes = realtimeModel.outlineNodesAsArray();
         if (event.target.parentElement.id === "") {
           var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.parentElement.parentElement.id })[0];
@@ -235,7 +266,7 @@
         }); 
       }
     
-      $("#" + nodeID + " .time-of-day").on("input change paste blur", function(event) {
+      $("#" + nodeID + " .time-of-day").on("input change paste blur awesomplete-select", function(event) {
         var nodes = realtimeModel.outlineNodesAsArray();
         if (event.target.parentElement.id === "") {
           var node = $.grep(nodes, function(e){ return e.id == event.target.parentElement.parentElement.parentElement.id })[0];
@@ -424,6 +455,8 @@
     return htmlList.join('');
   };
 
+  var verticalBreak = 45;
+
   var reflowScreen = function() {
     var yCursor = 0;
     var xCursor = 0;
@@ -436,7 +469,7 @@
         xCursor += 200+30;
       }
 
-      if ((yCursor+$("#" + nodes[i].id).outerHeight()+20) > (($( window ).height()/scale)-20)) {
+      if ((yCursor+$("#" + nodes[i].id).outerHeight()+20) > ((($( window ).height()-verticalBreak)/scale)-30)) {
         yCursor = 23;
         xCursor += 200+10;          
       }
@@ -455,6 +488,93 @@
     return {lastXCursor: xCursor, lastWidth: 200+30};
   };
 
+
+  var findOrderAt = function(x, y, _insertLocation) {
+    var yCursor = 0;
+    var xCursor = 0;
+
+    var border = (5);
+
+    var nodes = realtimeModel.outlineNodesAsArray()
+
+    x = x / scale;
+    y = y / scale;
+
+    var selectedID = nodes[selectedItem].id;
+
+    if (_insertLocation >= 0) {
+      var item = nodes.splice(selectedItem, 1)[0]
+      nodes.splice(_insertLocation, 0, item)
+    }
+
+    var lastFoundColumnItem;
+
+    for (var i = 0; i < nodes.length; i++) {
+
+      if (nodes[i].type == "section" && i !== 0) {
+        yCursor = 0;
+        xCursor += 200+30;
+      }
+
+      if ((yCursor+$("#" + nodes[i].id).outerHeight()+20) > ((($( window ).height()-verticalBreak)/scale)-30)) {
+        yCursor = 23;
+        xCursor += 200+10;          
+      }
+
+      var posX = xCursor;
+      var posY = yCursor;
+      var width = 230;
+      var height = $("#" + nodes[i].id).outerHeight();
+
+      if (x >= (posX-border) && x <= (posX + width + border + (22*scale)) && y >= (posY-border) && y <= (posY + height+(100*scale))) {
+        lastFoundColumnItem = i;
+      }
+
+      if (x >= (posX-border) && x <= (posX + width + border) && y >= (posY-border) && y <= (posY + height + border)) {
+        return i;
+      }
+      yCursor += $("#" + nodes[i].id).outerHeight() + 10;
+    }
+    return lastFoundColumnItem;
+  };
+
+  var reflowScreenReordered = function(_insertLocation) {
+    var yCursor = 0;
+    var xCursor = 0;
+
+    var nodes = realtimeModel.outlineNodesAsArray()
+
+    var selectedID = nodes[selectedItem].id;
+
+    if (_insertLocation >= 0) {
+      var item = nodes.splice(selectedItem, 1)[0]
+      nodes.splice(_insertLocation, 0, item)
+    }
+
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].type == "section" && i !== 0) {
+        yCursor = 0;
+        xCursor += 200+30;
+      }
+      if ((yCursor+$("#" + nodes[i].id).outerHeight()+20) > ((($( window ).height()-verticalBreak)/scale)-30)) {
+        yCursor = 23;
+        xCursor += 200+10;          
+      }
+      if (nodes[i].id === selectedID) {
+
+        insertPosition = [xCursor + 120, yCursor + ($("#" + nodes[i].id).outerHeight()/2) + 20]
+
+        yCursor += $("#" + nodes[i].id).outerHeight() + 10;
+      } else {
+        $("#" + nodes[i].id).css("top", yCursor);
+        $("#" + nodes[i].id).css("left", xCursor);
+        yCursor += $("#" + nodes[i].id).outerHeight() + 10;
+      }
+    }
+  };
+
+
+
   var selectItemByID = function(id) {
     var nodes = realtimeModel.outlineNodesAsArray();
     var node = $.grep(nodes, function(e){ return e.id == id })[0];
@@ -464,7 +584,7 @@
 
   var selectItem = function(forceTimeout) {
     var nodes = realtimeModel.outlineNodesAsArray();
-    $(".selected").toggleClass("selected", false);
+    $("#canvas .selected").toggleClass("selected", false);
     $("#" + nodes[selectedItem].id).toggleClass( "selected", true );
 
     var cNode = $("#" + nodes[selectedItem].id);
@@ -532,10 +652,10 @@
     if (document.activeElement.contentEditable === true || document.activeElement.nodeName === "INPUT" || document.activeElement.nodeName === "TEXTAREA") {
       
     } else {
-      if (event.keyCode == 40 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 187 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 189 && (event.metaKey || event.ctrlKey))) {
+      if (event.keyCode == 40 || event.keyCode == 27 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 187 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 189 && (event.metaKey || event.ctrlKey))) {
         event.preventDefault();
       }
-      //console.log(event)
+      console.log(event)
     }
 
     var nodes = realtimeModel.outlineNodesAsArray()
@@ -556,6 +676,9 @@
           }
         }
 
+        break;
+      case 27: 
+        inspectorWindow.clearFilters();
         break;
       // up arrow  
       case 38:
@@ -622,21 +745,11 @@
         break;
       case 73:
         if (event.metaKey || event.ctrlKey) {
-          toggleInspector();
+          inspectorWindow.toggle();
         }
         break;
     }
   });
-
-  var toggleInspector = function() {
-    if ($("#inspector").hasClass("hidden")) {
-      $("#inspector").toggleClass("hidden", false);
-      toolBarUI.reflow();
-    } else {
-      $("#inspector").toggleClass("hidden", true);
-      toolBarUI.reflow();
-    }
-  };
 
   var toggleFullscreen = function() {
     if (document.webkitIsFullScreen) {
@@ -649,20 +762,22 @@
   };
 
   var scaleToFit = function() {
-    console.log("scale to fit")
-    // this is super hacky, but it tot works!
     var screenWidth = $(window).width();
     scale = 0.1;
-    for (var i = 0; i < 100; i++) {
-      scale += 0.02;
+    var lastTestScale = 0;
+
+    for (var i = 0; i < 200; i++) {
+      scale += 0.025;
       var reflowValues = reflowScreen();
-      if (screenWidth > ((reflowValues.lastXCursor + reflowValues.lastWidth + (200))*scale)) {
-        //console.log("still too small")
+      //console.log(reflowValues)
+      if ((screenWidth/scale) > (reflowValues.lastXCursor + reflowValues.lastWidth + 20)) {
+        lastTestScale = scale; //Math.round10(scale, -1);
       } else {
         break;
       }
     }
-    $("#canvas").css("transform", "translate3d(0,0,0) scale(" + scale + ")")
+    scale = lastTestScale;
+    $("#canvas").css("transform", "translate3d(0,0,0) scale(" + lastTestScale + ")")
     reflowScreen();
   };
 
@@ -672,89 +787,11 @@
     }
   });
 
-  var findOrderAt = function(x, y, _insertLocation) {
-    var yCursor = 0;
-    var xCursor = 0;
-
-    var border = (5);
-
-    var nodes = realtimeModel.outlineNodesAsArray()
-
-    x = x / scale;
-    y = y / scale;
-
-    var selectedID = nodes[selectedItem].id;
-
-    if (_insertLocation >= 0) {
-      var item = nodes.splice(selectedItem, 1)[0]
-      nodes.splice(_insertLocation, 0, item)
-    }
-
-    var lastFoundColumnItem;
-
-    for (var i = 0; i < nodes.length; i++) {
-
-      if (nodes[i].type == "section" && i !== 0) {
-        yCursor = 0;
-        xCursor += 200+30;
-      }
-
-      if ((yCursor+$("#" + nodes[i].id).outerHeight()+20) > (($( window ).height()/scale)-20)) {
-        yCursor = 23;
-        xCursor += 200+10;          
-      }
-
-      var posX = xCursor;
-      var posY = yCursor;
-      var width = 230;
-      var height = $("#" + nodes[i].id).outerHeight();
-
-      if (x >= (posX-border) && x <= (posX + width + border + (22*scale)) && y >= (posY-border) && y <= (posY + height+(100*scale))) {
-        lastFoundColumnItem = i;
-      }
-
-      if (x >= (posX-border) && x <= (posX + width + border) && y >= (posY-border) && y <= (posY + height + border)) {
-        return i;
-      }
-      yCursor += $("#" + nodes[i].id).outerHeight() + 10;
-    }
-    return lastFoundColumnItem;
-  };
-
-  var reflowScreenReordered = function(_insertLocation) {
-    var yCursor = 0;
-    var xCursor = 0;
-
-    var nodes = realtimeModel.outlineNodesAsArray()
-
-    var selectedID = nodes[selectedItem].id;
-
-    if (_insertLocation >= 0) {
-      var item = nodes.splice(selectedItem, 1)[0]
-      nodes.splice(_insertLocation, 0, item)
-    }
-
-    for (var i = 0; i < nodes.length; i++) {
-      if (nodes[i].type == "section" && i !== 0) {
-        yCursor = 0;
-        xCursor += 200+30;
-      }
-      if ((yCursor+$("#" + nodes[i].id).outerHeight()+20) > (($( window ).height()/scale)-20)) {
-        yCursor = 23;
-        xCursor += 200+10;          
-      }
-      if (nodes[i].id === selectedID) {
-
-        insertPosition = [xCursor + 120, yCursor + ($("#" + nodes[i].id).outerHeight()/2) + 20]
-
-        yCursor += $("#" + nodes[i].id).outerHeight() + 10;
-      } else {
-        $("#" + nodes[i].id).css("top", yCursor);
-        $("#" + nodes[i].id).css("left", xCursor);
-        yCursor += $("#" + nodes[i].id).outerHeight() + 10;
-      }
-    }
-  };
+  var scaleTo1 = function() {
+    scale = 1.6;
+    $("#canvas").css("transform", "translate3d(0,0,0) scale(" + scale + ")")
+    reflowScreen();
+  }
 
   var changeScale = function(amount) {
     var scaleIncrement;
@@ -775,6 +812,8 @@
 
     scale = Math.max(scale, 0.1);
     scale = Math.round10(scale, -1);
+
+    console.log(scale);
 
     $("#canvas").css("transform", "translate3d(0,0,0) scale(" + scale + ")")
     reflowScreen();
@@ -849,7 +888,7 @@
     var node = $.grep(nodes, function(e){ return e.id == nodeID })[0];
     node.imageURL = imageURL;
     refreshNode(nodeID)
-    console.log("updating image url: " + imageURL)
+    //console.log("updating image url: " + imageURL)
   };
 
   var refreshNode = function(nodeID) {
@@ -859,7 +898,6 @@
     $("#canvas").append(displayNodeHTML(node));
     attachEventListenersToNode(node.id);
     reflowScreen();
-    setTimeout(reflowScreen, 1500);
   };
 
   var toggleNodeType = function(index) {
@@ -922,18 +960,24 @@
   };
 
   var updateLocalSynopsis = function(node) {
-    $("#" + node.id + " .synopsis").toggleClass("hidden", false);
-    $("#" + node.id + " .synopsis").text(node.synopsis);
+    if (node.synopsis !== "") {
+      $("#" + node.id + " .synopsis").toggleClass("hidden", false);
+      $("#" + node.id + " .synopsis").text(node.synopsis);
+    }
   };
 
   var updateLocalSetting = function(node) {
-    $("#" + node.id + " .setting").toggleClass("hidden", false);
-    $("#" + node.id + " .setting").text(node.setting);
+    if (node.setting !== "") {
+      $("#" + node.id + " .setting").toggleClass("hidden", false);
+      $("#" + node.id + " .setting").text(node.setting);
+    }
   };
 
   var updateLocalTimeOfDay = function(node) {
-    $("#" + node.id + " .time-of-day").toggleClass("hidden", false);
-    $("#" + node.id + " .time-of-day").text(node.timeOfDay);
+    if (node.timeOfDay !== "") {
+      $("#" + node.id + " .time-of-day").toggleClass("hidden", false);
+      $("#" + node.id + " .time-of-day").text(node.timeOfDay);
+    }
   };
 
   var screenshot = function(callbackfunction) {
@@ -968,21 +1012,26 @@
     gapi.load('drive-share', init);
   };
 
-  var filterTags = function(tags) {
+  var filter = function(type, items) {
     // turn all nodes dark
     $('.card').toggleClass("dim", true);
     $('.label-container').empty();
     // get the ids for tags
     
-    for (var z = 0; z < tags.length; z++) {
-      nodes = realtimeModel.getIndex('tags').propertyElements[tags[z]];
+    for (var z = 0; z < items.length; z++) {
+      nodes = realtimeModel.getIndex(type).propertyElements[items[z]];
       // turn those nodes light
       for (var i = 0; i < nodes.length; i++) {
         $("#" + nodes[i]).toggleClass("dim", false);
-        $("#" + nodes[i] + " .label-container").append('<div style="background-color: ' + tinycolor(outlinerUtils.stringToAscii(tags[z])).desaturate(10).brighten(10).toHexString() + '; border-left: 3px solid ' + tinycolor(outlinerUtils.stringToAscii(tags[z])).toHexString() + ';">' + tags[z] + '</div>');
+        $("#" + nodes[i] + " .label-container").append('<div style="background-color: ' + tinycolor(outlinerUtils.stringToAscii(items[z])).desaturate(10).brighten(10).toHexString() + '; border-left: 3px solid ' + tinycolor(outlinerUtils.stringToAscii(items[z])).toHexString() + ';">' + items[z] + '</div>');
       }
     }
   };
+
+  var clearFilter = function() {
+    $('.card').toggleClass("dim", false);
+    $('.label-container').empty();
+  }
 
   var preventArrows = function() {
     preventArrowToggle = true;
@@ -995,22 +1044,47 @@
 
   var updateAutocomplete = function(property) {
 
+    console.log("updatin auto: " + property )
+
     var updateList = function(property) {
       switch (property) {
         case 'setting':
-          $('.' + property).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toUpperCase() });
+          $('.' + property).each(function(i,v){
+            if ($(v).data().a) {
+              $(v).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toUpperCase() });
+            }
+          });
           break;
         case 'timeOfDay':
-          $('.' + property).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toUpperCase() });
+          //$('.' + property).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toUpperCase() });
+          $('.' + property).each(function(i,v){
+            if ($(v).data().a) {
+              $(v).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toUpperCase() });
+            }
+          });
           break;
         case 'tags':
-          $('.' + property).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toLowerCase() });
+          //$('.' + property).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toLowerCase() });
+          $('.' + property).each(function(i,v){
+            if ($(v).data().a) {
+              $(v).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toLowerCase() });
+            }
+          });
           break;
         case 'tags':
-          $('.' + property).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toLowerCase() });
+          //$('.' + property).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toLowerCase() });
+          $('.' + property).each(function(i,v){
+            if ($(v).data().a) {
+              $(v).data().a.list = $.map(realtimeModel.getIndex(property).propertyList, function(value, index) { return value.toLowerCase() });
+            }
+          });
           break;
         default:
-          $('.' + property).data().a.list = $.map(realtimeModel.getIndex('actors').propertyList, function(value, index) { return value.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) });
+          //$('.' + property).data().a.list = $.map(realtimeModel.getIndex('actors').propertyList, function(value, index) { return value.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) });
+          $('.' + property).each(function(i,v){
+            if ($(v).data().a) {
+              $(v).data().a.list = $.map(realtimeModel.getIndex('actors').propertyList, function(value, index) { return value.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) });            }
+          });
       }
     }
 
@@ -1021,6 +1095,17 @@
         updateList(property);
       }
     }
+
+    console.log("updatin auto end")
+
+  };
+
+  var addNode = function() {
+    addRemoteNode(selectedItem);
+  };
+
+  var deleteNode = function() {
+    removeRemoteNode(selectedItem);
   };
 
   window.outlinerApp = {
@@ -1037,14 +1122,19 @@
     reflow: reflowScreen,
     refreshNode: refreshNode,
     scaleToFit: scaleToFit,
+    scaleTo1: scaleTo1,
     screenshot: screenshot,
     shareDialogue: shareDialogue,
-    filterTags: filterTags,
+    filter: filter,
+    clearFilter: clearFilter,
     preventArrows: preventArrows,
     releaseArrows: releaseArrows,
     changeScale: changeScale,
+    selectItem: selectItem,
+    addNode: addNode,
+    deleteNode: deleteNode,
+    setSelectedItem: function(item) { selectedItem = item; },
     toggleFullscreen: toggleFullscreen,
-    toggleInspector: toggleInspector,
     updateAutocomplete: updateAutocomplete,
     getCurrentSelection: function() { return selectedItem; },
     twoplus: function() { return 2+2; }

@@ -1,6 +1,7 @@
 /*
 
   TODAYS
+    context menu shouldnt go offscreen
     scroll to position on selected item
     kochai: there's an issue when you keep deleting notes and you get to delete the last one on the top left, after that you can't go to another note to delete it until refreshing the page
     //scale to fit better!!!!
@@ -12,12 +13,12 @@
       completion
 
     //filter by any index
-    right click context menu:
-      add node after
-      delete
-      inspect
-      speak from here
-      zoom to fit
+    //right click context menu:
+    //  add node after
+    //  delete
+    //  inspect
+    //  speak from here
+    //  zoom to fit
       
     //listen for image load for reflow
     show completion info

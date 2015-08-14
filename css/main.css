@@ -864,7 +864,6 @@ h2 {
   left: 5px;
 }
 
-
 #chatinput {
   font-family: 'proximanova';
   color: rgb(255,255,255);
@@ -895,7 +894,7 @@ h2 {
   margin-top: 10px;
   margin-left: 10px;
   /*border: 1px solid rgba(0,0,0,0.3);*/
-  box-shadow: 0px 2px 0px 1px rgba(0,0,0,0.1), 0px 2px 3px 0px rgba(0,0,0,0.3);
+  box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.1), 0px 2px 15px 0px rgba(0,0,0,0.3);
   cursor: default;
   transform: translate3d(0,0,0) scale(1);
   transform-origin: top left;
@@ -912,22 +911,28 @@ h2 {
   display: block !important;
 }
 
-
 #context-menu div {
   color: #555;
   font-size: 15px;
   padding: 6px 15px;
 }
 
+#context-menu div:first-child {
+    border-radius: 5px 5px 0 0;
+}
+
+#context-menu div:last-child {
+    border-radius: 0 0 5px 5px;
+}
+
 #context-menu div:hover {
-  background-color: rgba(0,0,0,0.1);
+  background-color: rgba(0,0,0,0.07);
 }
 
 #context-menu hr {
   border: 0;
-  border-bottom: 1px dotted rgba(0,0,0,0.3);
+  border-bottom: 1px dotted rgba(0,0,0,0.1);
 }
-
 
 .filter-content .content-section h3 {
   font-size: 20px;
@@ -936,7 +941,3 @@ h2 {
 .filter-content .content-section span {
   color: rgba(0,0,0,0.7);
 }
-
-
-
-

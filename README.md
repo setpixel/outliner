@@ -1,7 +1,7 @@
 Outliner
 ============
 
-<img src="https://raw.githubusercontent.com/setpixel/outliner/master/chromestore/icon_256.png">
+<img align="right" style="padding-left: 30px; width: 100px;" src="https://raw.githubusercontent.com/setpixel/outliner/master/chromestore/icon_256.png">
 
 Quickly outline the shit out of some stuff!
 

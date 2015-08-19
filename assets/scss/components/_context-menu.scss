@@ -1,0 +1,47 @@
+#context-menu {
+  background-color: #eee;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 999;
+  margin-top: 10px;
+  margin-left: 10px;
+  /*border: 1px solid rgba(0,0,0,0.3);*/
+  box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.1), 0px 2px 15px 0px rgba(0,0,0,0.3);
+  cursor: default;
+  transform: translate3d(0,0,0) scale(1);
+  transform-origin: top left;
+  opacity: 1;  
+  transition: transform 100ms ease, opacity 100ms ease;
+
+}
+
+#context-menu.hidden {
+  transform: translate3d(0,0,0) scale(.9);
+  transform-origin: top left;
+  transition: transform 100ms ease, opacity 100ms ease;
+  opacity: 0;
+  display: block !important;
+}
+
+#context-menu div {
+  color: #555;
+  font-size: 15px;
+  padding: 6px 15px;
+}
+
+#context-menu div:first-child {
+    border-radius: 5px 5px 0 0;
+}
+
+#context-menu div:last-child {
+    border-radius: 0 0 5px 5px;
+}
+
+#context-menu div:hover {
+  background-color: rgba(0,0,0,0.07);
+}
+
+#context-menu hr {
+  border: 0;
+  border-bottom: 1px dotted rgba(0,0,0,0.1);
+}

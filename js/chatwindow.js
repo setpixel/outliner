@@ -103,6 +103,13 @@
       }
     });
 
+    $(window).resize(function() {
+      var maxY = $(window).height() - 100;
+      var maxX = $(window).width() - 100;
+      $("#chatwindow").css("left", Math.min($("#chatwindow").position().left, maxX));
+      $("#chatwindow").css("top", Math.min($("#chatwindow").position().top, maxY));
+    });
+
   });
 
   window.chatWindow = {
@@ -114,6 +121,5 @@
   $( function() {
     scrollToBottom();
   });
-
 
 }).call(this);

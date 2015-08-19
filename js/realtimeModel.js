@@ -165,7 +165,7 @@ TODO
   }
 
   function displayObjectChangedEvent(evt) {
-    //console.log(evt);
+    console.log(evt);
 
     var events = evt.events;
     var eventCount = evt.events.length;
@@ -175,7 +175,7 @@ TODO
       switch (events[i].type) {
         case "values_added": 
           for (var i2 = 0; i2 < events[i].values.length; i2++) {
-            if (!events[i].isLocal){
+            if (!events[i].isLocal || events[i].isUndo || events[i].isRedo){
               outlinerApp.addLocalNode(events[i].values[i2])
             }
             
@@ -183,7 +183,7 @@ TODO
           break;
         case "values_removed": 
           for (var i2 = 0; i2 < events[i].values.length; i2++) {
-            if (!events[i].isLocal){
+            if (!events[i].isLocal || events[i].isUndo || events[i].isRedo){
               outlinerApp.removeLocalNode(events[i].values[i2].id)
             }
             
@@ -197,28 +197,28 @@ TODO
 
           switch (events[i].property) {
             case "type":
-              if (!events[i].isLocal){
+              if (!events[i].isLocal || events[i].isUndo || events[i].isRedo){
                 outlinerApp.changeLocalNodeType(events[i].target);
               }
               break;
             case "title":
-              if (!events[i].isLocal){
+              if (!events[i].isLocal || events[i].isUndo || events[i].isRedo){
                 outlinerApp.updateLocalTitle(events[i].target);
               }
               break;
             case "synopsis":
-              if (!events[i].isLocal){
+              if (!events[i].isLocal || events[i].isUndo || events[i].isRedo){
                 outlinerApp.updateLocalSynopsis(events[i].target);
               }
               break;
             case "setting":
-              if (!events[i].isLocal){
+              if (!events[i].isLocal || events[i].isUndo || events[i].isRedo){
                 outlinerApp.updateLocalSetting(events[i].target);
               }
               createIndex('setting', false);
               break;
             case "timeOfDay":
-              if (!events[i].isLocal){
+              if (!events[i].isLocal || events[i].isUndo || events[i].isRedo){
                 outlinerApp.updateLocalTimeOfDay(events[i].target);
               }
               createIndex('timeOfDay', false);
@@ -230,7 +230,7 @@ TODO
               createIndex('tags', true);
               break;
             case "imageURL":
-              if (!events[i].isLocal){
+              if (!events[i].isLocal || events[i].isUndo || events[i].isRedo){
                 outlinerApp.refreshNode(events[i].target.id);
               }
               break;
@@ -482,11 +482,27 @@ TODO
     }
   };
 
+  var undo = function() {
+    var model = docModel;
+    if (model.canUndo) {
+      model.undo();
+    }
+  };
+
+  var redo = function() {
+    var model = docModel;
+    if (model.canRedo) {
+      model.redo();
+    }
+  };
+
   window.realtimeModel = {
     outlineNodesAsArray: outlineNodesAsArray,
     addNode: addNode,
     move: move,
     remove: remove,
+    undo: undo,
+    redo: redo,
     document: function(){ return document;},
     docModel: function(){ return docModel;},
     docRoot: function(){ return docRoot;},

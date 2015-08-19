@@ -3,6 +3,8 @@
 
   var visible = false;
 
+  var cmHeight = 0;
+
   var init = function() {
     var html = [];
 
@@ -17,7 +19,9 @@
     $("#context-menu").html(html.join(''))
     
     setTimeout(addEventListeners, 500);
-  }
+
+    setTimeout(function(){$("#context-menu").css("left", 10000);}, 200);
+  };
 
   var addEventListeners = function() {
     $("#context-menu #add").on("click", function(){
@@ -38,7 +42,7 @@
     $("#context-menu #fit-1").on("click", function(){
       outlinerApp.scaleTo1();
     })
-  }
+  };
 
   window.chatWindow = {
     twoplus: function() { return 2+2; }
@@ -51,18 +55,18 @@
     $(document).on("contextmenu", function(e){
       e.preventDefault();
       if (visible == false) {
+        var maxY = $(window).height() - 215;
         $("#context-menu").css("left", e.pageX);
-        $("#context-menu").css("top", e.pageY);
+        $("#context-menu").css("top", Math.min(e.pageY, maxY));
         visible = true;
         $("#context-menu").toggleClass("hidden", false);
         $("#context-menu").show();
       } else {
-        console.log("here")
         visible = false;
         $("#context-menu").toggleClass("hidden", true);
-        setTimeout(function(){$("#context-menu").css("left", 10000);;}, 200);
+        setTimeout(function(){$("#context-menu").css("left", 10000);}, 200);
       }
-    })
+    });
 
     $(document).on("click", function(e){
       if (visible && (e.button != 2)) {
@@ -71,10 +75,8 @@
         setTimeout(function(){$("#context-menu").hide();}, 200);
         setTimeout(function(){$("#context-menu").css("left", 10000);;}, 200);
       }
-    })
-
+    });
 
   });
-
 
 }).call(this);

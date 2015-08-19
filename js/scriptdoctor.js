@@ -232,17 +232,20 @@
     
     chatWindow.addChatLine("Script Dr. " + doctorName, string)
     
-    if (string.slice(-1) == "?") {
-      speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + "? ");
-    } else if (string.slice(-2) == "...") {
-      speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '').replace("...", ".") + " ");
-    } else if (string.slice(-1) == ".") {
-      speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + " ");
-    } else if (string.slice(-1) == "!") {
-      speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + " ");
-    } else {
-      speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + ". ");
-    }
+
+    // chat should not speak!!
+    
+    // if (string.slice(-1) == "?") {
+    //   speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + "? ");
+    // } else if (string.slice(-2) == "...") {
+    //   speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '').replace("...", ".") + " ");
+    // } else if (string.slice(-1) == ".") {
+    //   speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + " ");
+    // } else if (string.slice(-1) == "!") {
+    //   speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + " ");
+    // } else {
+    //   speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + ". ");
+    // }
 
     if (!awaitTimer) {
       checkOutput();

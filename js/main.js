@@ -653,7 +653,7 @@
     if (document.activeElement.contentEditable === true || document.activeElement.nodeName === "INPUT" || document.activeElement.nodeName === "TEXTAREA") {
       
     } else {
-      if (event.keyCode == 40 || event.keyCode == 27 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 187 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 189 && (event.metaKey || event.ctrlKey))) {
+      if (event.keyCode == 40 || event.keyCode == 27 || event.keyCode == 38 || event.keyCode == 13 || event.keyCode == 9 || (event.keyCode == 8 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 187 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 189 && (event.metaKey || event.ctrlKey)) || (event.keyCode == 89 && (event.metaKey || event.ctrlKey))) {
         event.preventDefault();
       }
       console.log(event)
@@ -747,6 +747,18 @@
       case 73:
         if (event.metaKey || event.ctrlKey) {
           inspectorWindow.toggle();
+        }
+        break;
+      case 90:
+        // command z undo
+        if (event.metaKey || event.ctrlKey) {
+          realtimeModel.undo();
+        }
+        break;
+      case 89:
+        // command y redo
+        if (event.metaKey || event.ctrlKey) {
+          realtimeModel.redo();
         }
         break;
     }

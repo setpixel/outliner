@@ -1,0 +1,123 @@
+#chatwindow {
+  box-sizing: border-box;
+  font-size: 15px;
+  padding: 20px;
+  background-color: rgba(0,0,0,0.8);
+  display: block;
+  position: absolute;
+  width: 350px;
+  height: 450px;
+  z-index: 9999;
+  border-radius: 8px;
+  right: 30px;
+  top: 30px;
+  overflow: hidden;
+  transition: width 500ms ease, height 300ms ease, background-color 500ms ease, top 300ms ease, left 300ms ease, transform 100ms ease, opacity 100ms ease;
+}
+
+#chatwindow.minimized {
+  overflow: hidden;
+  height: 40px;
+  width: 300px;
+  opacity: 0.4;
+  bottom: 12px;
+  padding: 10px;
+  background-color: rgba(0,0,0,0.3);
+  transition: width 500ms ease, height 300ms ease, background-color 500ms ease, top 500ms ease, left 500ms ease, opacity 100ms ease;
+}
+
+#chatwindow.dragged {
+  transform: translate3d(0,0,0) scale(1.05);
+  transition: transform 100ms ease;
+}
+
+
+#chatoutput::-webkit-scrollbar {
+ display: none;
+}
+ 
+
+#chatoutput {
+  color: rgb(255,255,255);
+  height: 375px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+
+/*  -webkit-touch-callout: text;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;*/
+}
+
+#chatwindow.minimized #chatoutput{
+  height: 19px;
+}
+
+
+#chatoutput .screenname {
+  color: #777;
+  margin-right: 10px;
+  display: block;
+}
+
+#chatoutput .text {
+  color: #ccc;
+  display: block;
+}
+
+#chatwindow .minimizebutton {
+  display: block;
+  position: absolute;
+  background-color: rgba(255,255,255,0.0);
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  padding-left: 5px;
+  box-sizing: border-box;
+  right: 10px;
+  top: 10px;
+}
+
+#chatwindow .minimizebutton:hover {
+  background-color: rgba(255,255,255,0.08);
+}
+
+#chatwindow.minimized .minimizebutton{
+  visibility: hidden;
+}
+
+#chatwindow .minimizebutton span {
+  display: block;
+  position: absolute;
+  background-color: rgba(255,255,255,0.6);
+  width: 20px;
+  height: 4px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  bottom: 5px;
+  left: 5px;
+}
+
+#chatinput {
+  font-family: 'proximanova';
+  color: rgb(255,255,255);
+  font-size: 15px;
+  display: block;
+  position: absolute;
+  bottom: 20px;
+  font-weight: 100;
+  width: 310px;
+  outline: 0;
+  padding-top: 10px;
+  border: 0;
+  border-top: 1px dotted rgba(255,255,255,0.2);
+  background: transparent;
+  box-sizing: border-box;
+  color: #eee;
+}
+
+#chatwindow.minimized #chatinput {
+  visibility: hidden;
+}

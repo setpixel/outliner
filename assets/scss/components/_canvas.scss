@@ -1,0 +1,19 @@
+#canvas {
+	transform: translate3d(0,0,0) scale(.2);
+	transform-origin: top left;
+	transition: transform 150ms ease;
+	margin: 20px;
+	width: 0px;
+	height: 0px;
+	/* -webkit-perspective: 1000;*/
+}
+
+#canvas-container {
+	overflow: scroll; 
+	width: 9000px;
+	height: 2000px;
+}
+
+#canvas-container::-webkit-scrollbar {
+	display: none;
+}

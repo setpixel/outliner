@@ -1,0 +1,188 @@
+#inspector {
+  font-family: 'proximanova';
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 450px;
+  height: auto;
+  z-index: 9999;
+  background-color: rgba(255,255,255,0.9);
+  display: block;
+  position: fixed;
+  padding: 0 20px;
+  box-shadow: -1px 0px 3px 0px rgba(0,0,0,0.3);
+  visibility: visible;
+}
+
+#inspector .close-button {
+  display: inline-block;
+  position: absolute;
+  color: #aaa;
+  width: auto;
+  padding: 5px 5px;
+  border: 0px solid #aaa;
+  margin: 20px 0;
+  right: 20px;
+  top: 0px;
+  opacity: 0.3;
+}
+
+#inspector .close-button:hover {
+  opacity: 0.5;
+}
+
+#inspector ul.tabs {
+  position: relative;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: inline-block;
+  margin: 20px 0 20px 0;
+  width: 100%;
+  /*border-bottom: 1px solid #aaa;*/
+}
+
+#inspector .tabs li {
+  color: #aaa;
+  float: left;
+  width: auto;
+  padding: 10px 30px;
+  border: 1px solid #aaa;
+  border-right: 0;
+  cursor: default;
+
+}
+
+#inspector .tabs li:first-child {
+  border-radius: 5px 0 0 5px;
+}
+
+#inspector .tabs li:last-child {
+  border-radius: 0 5px 5px 0;
+  border-right: 1px solid #aaa;
+}
+
+#inspector .tabs li.select {
+  color: #fff;
+  background-color: rgba(0,0,0,0.2);
+}
+
+#inspector .tabs li.select:hover {
+  color: #fff;
+  background-color: rgba(0,0,0,0.2);
+}
+
+#inspector .tabs li:hover {
+  background-color: rgba(0,0,0,0.03);
+}
+
+
+#inspector h1 {
+  font-weight: 700;
+}
+
+#inspector input, textarea {
+  font-family: 'proximanova';
+  font-weight: 100;
+  display: block;
+  width: 450px;
+  outline: 0;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  margin-right: 20px;
+  border: 0;
+  border-bottom: 1px dotted rgba(0,0,0,0.2);
+  background: transparent;
+  box-sizing: border-box;
+  font-size: 20px;
+  text-align: bottom;
+  color: #333;
+}
+
+#inspector ::-webkit-input-placeholder {
+  color: rgba(0,0,0,0.3);
+}
+
+
+#inspector #title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+}
+
+#inspector #text {
+  font-family: 'courierprime';
+  font-size: 12px;
+  font-weight: 100;
+  color: #333;
+}
+
+#setting, #timeOfDay {
+  text-transform: uppercase;
+}
+
+#inspector select {
+  font-family: 'proximanova';
+  font-size: 16px;
+  font-weight: 300;
+  outline: 0;
+  border: 1px solid rgba(0,0,0,0.3);
+  background: transparent;
+  width: 150px;
+  padding: -30px;
+  margin-bottom: 20px;
+  height: 40px;
+  appearance: none;
+/*  background: url(http://www.stackoverflow.com/favicon.ico) 96% / 15% no-repeat #eee;
+*/}
+
+#inspector .filter-item {
+  font-size: 14px;
+  position: relative;
+  padding: 8px 10px;
+  display: block;
+  float: left;
+  border-radius: 4px;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  margin-right: 8px;
+  margin-bottom: 8px;
+  text-transform: capitalize;
+  opacity: 0.4;
+  cursor: default;
+}
+
+#inspector .filter-item:hover {
+  opacity: 0.8;
+}
+
+#inspector .filter-item.selected {
+  opacity: 1;
+  box-shadow: 0px 0px 0px 3px #a0d3f0;
+}
+
+#inspector .filter-item.not-selected {
+  opacity: 0.4;
+}
+
+
+#inspector .item-count {
+  color: rgba(0,0,0,0.6);
+  position: relative;
+  display: inline;
+  top: 0px;
+  font-size: 10px;
+  padding: 3px;
+  margin-left: 5px;
+  border-radius: 3px;
+}  
+
+#inspector .content-section {
+  display: block;
+  margin-bottom: 20px;
+  clear: both;
+}
+
+#inspector .content-section h3 {
+  margin-bottom: 10px;
+}

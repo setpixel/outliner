@@ -165,6 +165,22 @@
     Do beats have a type? Character or Plot?
 */
 
+import "./speech";
+import "./contextmenu";
+import "./awesomplete";
+import "./outlinerutils";
+import "./gamepad";
+import "./chatwindow";
+import "./inspectorwindow";
+import "./toolbarui";
+import "./scriptdoctor";
+import "./stats";
+import "./realtimeModel";
+import "./awsuploader";
+import "./circlebob";
+import "./html2canvas.min.js";
+import "./namesdb";
+
 ;(function() {
   'use strict';
 

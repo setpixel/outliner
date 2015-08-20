@@ -1,0 +1,20 @@
+{
+  "name": "outliner",
+  "version": "0.0.0",
+  "homepage": "https://github.com/setpixel/outliner",
+  "authors": [
+    "Charles <charlesforman@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "tinycolor": "~1.2.1",
+    "moment": "~2.10.6"
+  }
+}

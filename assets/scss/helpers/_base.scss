@@ -1,0 +1,34 @@
+:-webkit-full-screen {
+	background-color: #222;
+	background: linear-gradient(90deg, #0e76bc 0%, #00aeef 100%);
+	z-index: 2147483647;
+	background-attachment: fixed;
+}
+
+.invisible {
+  display: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.clear {
+  clear: both;
+  margin-bottom: 0px !important;
+  height: 0 !important;
+}
+
+.center_relative {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+#right-padding-hack {
+  display: block;
+  position: absolute;
+  width: 20px;
+  height: 10px;
+}

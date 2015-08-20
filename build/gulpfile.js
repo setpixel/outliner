@@ -7,9 +7,9 @@ var parameters = require('../config/parameters.js');
 var gulpLoadPlugins = require('gulp-load-plugins');
 var $ = gulpLoadPlugins();
 
-browserSync.use(require('bs-snippet-injector'), {
-	file: parameters.footer_path
-});
+//browserSync.use(require('bs-snippet-injector'), {
+	//file: parameters.footer_path
+//});
 
 gulp.task('browser-sync', ['styles'], function() {
 	browserSync.init({
@@ -72,12 +72,12 @@ gulp.task('minify', ['vendor', 'babel'], function() {
 	.pipe(gulp.dest(parameters.web_path + '/assets/js'));
 });
 
-gulp.task('bs-reload', function() {
-	browserSync.reload();
+gulp.task('bs-reload', ['minify'], function() {
+	return browserSync.reload();
 });
 
 gulp.task('watch', function() {
-	gulp.watch(parameters.assets_path + '/**/*.js', ['minify']);
+	gulp.watch(parameters.assets_path + '/**/*.js', ['bs-reload']);
 	gulp.watch(parameters.assets_path + '/**/*.scss', ['styles']);
 	gulp.watch(parameters.app_path + '/**/*.html', ['bs-reload']);
 });

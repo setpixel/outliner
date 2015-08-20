@@ -1,0 +1,27 @@
+#circle-bob {
+	position: fixed;
+	border-radius: 50px;
+	background-color: rgba(255,255,255,0.5);
+	width: 100px;
+	height: 100px;
+	transform: translate3d(0,0,0) scale(.2);
+	transform-origin: middle;
+	/*  animation-name: throb;
+	animation-duration: 1.9s;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+	animation-timing-function: ease-in-out;*/
+	pointer-events:none;
+}
+
+@keyframes throb {
+	0%   {  
+		transform: translate3d(0,0,0) scale(1);
+		background-color: rgba(255,255,255,0.2);
+
+	}
+	100% {  
+		transform: translate3d(0,0,0) scale(1.2);
+		background-color: rgba(255,255,255,0.3);
+	}
+}

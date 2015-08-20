@@ -1,0 +1,98 @@
+#toolbarbg {
+  display: block;
+  position: absolute;
+  background: linear-gradient(0deg, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0) 100%);
+  right: 0px;
+  bottom: 0px;
+  width: 100%;
+  height: 250px;
+  opacity: 0.3;
+  transition: opacity 500ms ease;
+  pointer-events: none;
+}
+
+#toolbar {
+  color: #fff;
+  position: absolute;
+  display: block;
+  z-index: 999;
+  right: 0px;
+  bottom: 0px;
+  width: 100%;
+  height: 70px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#toolbar .logo {
+  width: 150px;
+  -webkit-filter: drop-shadow(0px 2px 0px rgba(0,0,0,.5));
+  padding-left: 20px;
+  bottom: 20px;
+  position: absolute;
+  opacity: 0.3;
+  transition: opacity 2000ms ease;
+
+}
+
+#toolbar.active .logo {
+  opacity: 1;
+  transition: opacity 300ms ease;
+}
+
+#toolbar .block {
+  display: block;
+  position: absolute;
+  transition: left 400ms ease;
+}
+
+
+#toolbar ul {
+  float: left;
+  display: block;
+  position: relative;
+  margin: 0px;
+  list-style: none;
+  margin-right: 10px;
+  margin-top: 17px;
+  visibility: visible;
+  opacity: 0;
+  transition: opacity 2000ms ease;
+}
+
+#toolbar.active ul {
+  opacity: 1;
+  transition: opacity 200ms ease;
+}
+
+#toolbar li {
+  float: left;
+/*  border: 4px none rgba(255,255,255,0.0);
+*/
+  font-size: 15px;
+  margin-right: 4px;
+  border-right: 0;
+  padding: 10px 5px;
+  opacity: 0.6;
+  text-shadow: 0px 1px 0px rgba(0,0,0,0.5); 
+
+}
+
+#toolbar li:hover {
+  opacity: 1;
+  background-color: rgba(255,255,255,0.0);
+  cursor: default;
+}
+
+#toolbar li:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+#toolbar li:last-child {
+  border-radius: 0 8px 8px 0;
+/*  border-right: 2px solid rgba(255,255,255,0.4);*/
+}

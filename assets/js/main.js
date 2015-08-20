@@ -178,7 +178,6 @@ import "./stats";
 import "./realtimeModel";
 import "./awsuploader";
 import "./circlebob";
-import "./html2canvas.min.js";
 import "./namesdb";
 
 ;(function() {
@@ -229,6 +228,7 @@ import "./namesdb";
     var fieldList = ['title', 'synopsis', 'imageURL','setting','timeOfDay','text', 'tags', 'actors', 'duration', 'completion'];
 
     for (var i = 0; i < fieldList.length; i++) {
+      if (node[fieldList[i]] == "[]") { node[fieldList[i]] = ""; };
       $("#inspector #" + fieldList[i] ).val(node[fieldList[i]]);
     }
 
@@ -303,6 +303,10 @@ import "./namesdb";
           })
         });
       }
+
+      $("#" + nodeID).dblclick(function(event) {
+        inspectorWindow.toggle(true);
+      });
 
       $("#" + nodeID).on("mousedown", function(event) {
         $('input').blur()

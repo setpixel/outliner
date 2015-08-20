@@ -365,6 +365,7 @@ TODO
 
     for (var i = 0; i < nodes.length; i++) {
       if (typeof nodes[i][property] === 'string') {
+        if (nodes[i][property] == "[]") { nodes[i][property] = ""; };
         if (isList) {
           var propertyItems = nodes[i][property].split(",");
           for (var z = 0; z < propertyItems.length; z++) {

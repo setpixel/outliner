@@ -13,6 +13,7 @@ browserSync.use(require('bs-snippet-injector'), {
 
 gulp.task('browser-sync', ['styles'], function() {
 	browserSync.init({
+		port: 8000,
 		server: {
 			basedir: parameters.app_url
 		}
@@ -65,9 +66,9 @@ gulp.task('styles', function() {
 });
 
 gulp.task('minify', ['vendor', 'babel'], function() {
+	// .pipe($.uglify())
 	return gulp.src([parameters.tmp_path + '/js/vendor.js', parameters.tmp_path + '/js/main.js'])
 	.pipe($.concat('app.min.js'))
-	.pipe($.uglify())
 	.pipe(gulp.dest(parameters.web_path + '/assets/js'));
 });
 

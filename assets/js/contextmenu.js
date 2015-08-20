@@ -53,6 +53,7 @@
     init();
 
     $(document).on("contextmenu", function(e){
+      console.log(visible)
       e.preventDefault();
       if (visible == false) {
         var maxY = $(window).height() - 215;
@@ -69,11 +70,15 @@
     });
 
     $(document).on("click", function(e){
+      console.log("SUP")
+
       if (visible && (e.button != 2)) {
+
+
         visible = false;
         $("#context-menu").toggleClass("hidden", true);
         setTimeout(function(){$("#context-menu").hide();}, 200);
-        setTimeout(function(){$("#context-menu").css("left", 10000);;}, 200);
+        setTimeout(function(){$("#context-menu").css("left", 10000);}, 200);
       }
     });
 

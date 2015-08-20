@@ -5,8 +5,7 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" media="all" href="css/main.css">
-    <link rel="stylesheet" media="all" href="css/awesomplete.css">
+    <link rel="stylesheet" media="all" href="/public/assets/css/main.css">
   </head>
   <body>
     <script src="http://apis.google.com/js/client.js?onload=OnLoadCallback"></script>
@@ -14,23 +13,7 @@
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.36.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-    <script src="js/tinycolor.js"></script> 
-    <script src="js/speech.js"></script> 
-    <script src="js/contextmenu.js"></script> 
-    <script src="js/awesomplete.js"></script> 
-    <script src="js/outlinerutils.js"></script> 
-    <script src="js/gamepad.js"></script> 
-    <script src="js/chatwindow.js"></script> 
-    <script src="js/inspectorwindow.js"></script> 
-    <script src="js/toolbarui.js"></script> 
-    <script src="js/scriptdoctor.js"></script> 
-    <script src="js/stats.js"></script>
-    <script src="js/realtimeModel.js"></script>
-    <script src="js/awsuploader.js"></script>
-    <script src="js/circlebob.js"></script>
-    <script src="js/main.js"></script> 
-    <script src="js/html2canvas.min.js" async></script> 
-    <script src="js/namesdb.js" async></script> 
+    <script src="/public/assets/js/app.min.js"></script>
 
     <div id="inspector" class="hidden">
       <ul class="tabs">
@@ -40,7 +23,7 @@
       </ul>
 
       <div class="close-button">
-        <img src="img/close.svg">
+        <img src="/public/assets/img/close.svg">
       </div>
       
       <div class="content inspector-content">
@@ -86,7 +69,7 @@
 
     <div id="toolbarbg"></div>
     <div id="toolbar">
-      <img src="img/outlinerlogo.png" class="logo">
+      <img src="/public/assets/img/outlinerlogo.png" class="logo">
       <div class="block left">
         <ul>
           <li>Outline</li>
@@ -125,7 +108,7 @@
 
     <div id="canvas-container">
         <div id="auth_window" class="hidden">
-          <img src="img/outlinerlogo.png" class="logo">
+          <img src="public/assets/img/outlinerlogo.png" class="logo">
           Hi there!<br/><br/>
           Outliner uses Google Drive to save an to your personal Google Drive. This allows you to share with other people and collaborate in realtime.<br/><br/>
           Outliner needs you to authorize Google Drive for your account. The Outliner app can not access any of your files, except outlines.
@@ -135,6 +118,5 @@
         <div id="right-padding-hack"></div>
       </div>
     </div>
-
-  </body>
+</body>
 </html>

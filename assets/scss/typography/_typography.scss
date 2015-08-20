@@ -1,0 +1,38 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+  font-family: 'proximanova';
+  font-weight: 300;
+  line-height: 1.10;
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+h2 {
+  display: block; /* Fallback for non-webkit */
+  display: -webkit-box;
+  max-width: 400px;
+	//TODO the following lines had variables saved in a regular css file with actual variables. You can now actually use this of figure something out.
+  //height: $font-size*$line-height*$lines-to-show; /* Fallback for non-webkit */
+  margin: 0 auto;
+  //font-size: $font-size;
+  //line-height: $line-height;
+  //-webkit-line-clamp: $lines-to-show;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[contenteditable="true"] { 
+  outline: 0px; 
+}

@@ -165,6 +165,21 @@
     Do beats have a type? Character or Plot?
 */
 
+import "./speech";
+import "./contextmenu";
+import "./awesomplete";
+import "./outlinerutils";
+import "./gamepad";
+import "./chatwindow";
+import "./inspectorwindow";
+import "./toolbarui";
+import "./scriptdoctor";
+import "./stats";
+import "./realtimeModel";
+import "./awsuploader";
+import "./circlebob";
+import "./namesdb";
+
 ;(function() {
   'use strict';
 
@@ -213,6 +228,7 @@
     var fieldList = ['title', 'synopsis', 'imageURL','setting','timeOfDay','text', 'tags', 'actors', 'duration', 'completion'];
 
     for (var i = 0; i < fieldList.length; i++) {
+      if (node[fieldList[i]] == "[]") { node[fieldList[i]] = ""; };
       $("#inspector #" + fieldList[i] ).val(node[fieldList[i]]);
     }
 
@@ -287,6 +303,10 @@
           })
         });
       }
+
+      $("#" + nodeID).dblclick(function(event) {
+        inspectorWindow.toggle(true);
+      });
 
       $("#" + nodeID).on("mousedown", function(event) {
         $('input').blur()

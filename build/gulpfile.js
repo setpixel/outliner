@@ -66,9 +66,11 @@ gulp.task('styles', function() {
 });
 
 gulp.task('minify', ['vendor', 'babel'], function() {
-	// .pipe($.uglify())
 	return gulp.src([parameters.tmp_path + '/js/vendor.js', parameters.tmp_path + '/js/main.js'])
+	.pipe($.sourcemaps.init())
 	.pipe($.concat('app.min.js'))
+	// .pipe($.uglify())
+	.pipe($.sourcemaps.write('.'))
 	.pipe(gulp.dest(parameters.web_path + '/assets/js'));
 });
 

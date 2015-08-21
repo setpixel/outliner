@@ -17,7 +17,7 @@
   only run on one computer
   tour
   its been a while! WHERE HAVE YOU BEEN?
-  operates in a mode 
+  operates in a mode
     will go out of mode on idle or after run its course
   randomly prompt
     did you know?
@@ -30,7 +30,7 @@
         what would they say?
         gender change
       tone
-        
+
       theme
         whats the theme of the story?
       plot
@@ -120,7 +120,7 @@
     // positive reinforcement
 
 
-  }
+  };
 
   var introduction = function() {
     var script = [
@@ -139,42 +139,42 @@
 
     queOutput(script);
 
-  }
+  };
 
   var queOutput = function(outputVal, delay) {
     mode = 'queued';
-    if (!delay) { delay = 0 }
+    if (!delay) { delay = 0; }
     if (Array.isArray(outputVal)){
       for (var i = 0; i < outputVal.length; i++) {
         if (i > 0) { delay = 0; }
-        if (outputVal[i] != "") {
+        if (outputVal[i] !== "") {
           outputQueue.push({type: "statement", string: outputVal[i], delay: delay});
         }
       }
     } else {
-      if (outputVal != "") {
+      if (outputVal !== "") {
         outputQueue.push({type: "statement", string: outputVal, delay: delay});
       }
     }
     checkOutput();
 
     clearTimeout(idleTimer);
-    idleTimer = setTimeout(function(){returnFromIdle()}, idleTimeout);
+    idleTimer = setTimeout(function(){returnFromIdle(); }, idleTimeout);
 
-  }
+  };
 
   var quePriorityOutput = function(string, delay) {
     mode = 'queued';
-    if (!delay) { delay = 0 }
+    if (!delay) { delay = 0; }
     outputQueue.unshift({type: "statement", string: string, delay: delay});
     checkOutput();
-  }
+  };
 
   var queQuestion = function(string, response, noResponse, waitTime, delay) {
-    if (!delay) { delay = 0 }
+    if (!delay) { delay = 0; }
     outputQueue.push({type: "question", string: string, response: response, noResponse: noResponse, waitTime: waitTime, delay: delay});
     checkOutput();
-  }
+  };
 
   var checkOutput = function() {
     if (outputTimer) {
@@ -186,36 +186,36 @@
         if (t.type == "question") {
           mode = 'watingresponse';
           awaitResponse = {response: t.response, noResponse: t.noResponse};
-          awaitTimer = setTimeout(function() {noResponse()}, t.waitTime);
+          awaitTimer = setTimeout(function() {noResponse(); }, t.waitTime);
         } else {
           mode = 'queued';
 
         }
-        
+
         var naturalDelay = 700 + (t.string.length * 20) + t.delay;
-        outputTimer = setTimeout(function() {output(t.string)}, naturalDelay);
-        
+        outputTimer = setTimeout(function() {output(t.string); }, naturalDelay);
+
       } else {
         mode = 'idle';
         clearTimeout(idleTimer);
-        idleTimer = setTimeout(function(){returnFromIdle()}, idleTimeout);
-      }    
+        idleTimer = setTimeout(function(){returnFromIdle(); }, idleTimeout);
+      }
     }
-  }
+  };
 
   var returnFromIdle = function() {
     idleTimer = null;
     queOutput("Can I ask you a question?");
     queQuestion("Do you like cats?", {positive: ["what!?!? i hate cats", "well.. you're wrong"], negative: "me too"}, ["I'm just saying.. cats r weird yo", "whats to like about them?"], 20000);
     queOutput("I'll never know why people like cats");
-  }
+  };
 
   var noResponse = function() {
     // should he accumulate idle points? more ignored means more absent
     awaitTimer = null;
     mode = 'idle';
     clearQueue();
-    idleTimeout += 1 * 60 * 1000
+    idleTimeout += 1 * 60 * 1000;
     if (Array.isArray(awaitResponse.noResponse)) {
       for (var i = 0; i < awaitResponse.noResponse.length; i++) {
         quePriorityOutput(awaitResponse.noResponse[i]);
@@ -223,18 +223,18 @@
     } else {
       quePriorityOutput(awaitResponse.noResponse);
     }
-  }
+  };
 
   var output = function(string) {
     outputTimer = null;
     // write to chat
     //console.log("scriptDoctor: " + string);
-    
-    chatWindow.addChatLine("Script Dr. " + doctorName, string)
-    
+
+    chatWindow.addChatLine("Script Dr. " + doctorName, string);
+
 
     // chat should not speak!!
-    
+
     // if (string.slice(-1) == "?") {
     //   speech.speakText(string.replace(/<(?:.|\n)*?>/gm, '') + "? ");
     // } else if (string.slice(-2) == "...") {
@@ -250,20 +250,20 @@
     if (!awaitTimer) {
       checkOutput();
     }
-    
-  }
+
+  };
 
   var clearQueue = function() {
     clearTimeout(outputTimer);
     outputTimer = null;
-    outputQueue = [];    
-  }
+    outputQueue = [];
+  };
 
   var input = function(string) {
     string = string.toLowerCase();
 
     clearTimeout(idleTimer);
-    idleTimer = setTimeout(function(){returnFromIdle()}, idleTimeout);
+    idleTimer = setTimeout(function(){returnFromIdle(); }, idleTimeout);
 
 
     var type = responseType(string);
@@ -273,7 +273,7 @@
     } else if (type == "question") {
       type = (questionType(string));
     } else {
-      
+
     }
 
     console.log(type);
@@ -340,7 +340,7 @@
     }
 
 
-  }
+  };
 
   var specificQuestions = [
     ["how old are you", ["27",["old enough to be mad successful as one of the most sought after script doctors!"]]],
@@ -371,119 +371,119 @@
       ["Did you hear about the guy whose whole left side was cut off?","He's all right now."],
     ].randomElement();
     queOutput(joke);
-  }
+  };
 
   var tellHelp = function() {
     var help = [
       clientName + "! All you had to do is ask.",
-      "What kind of help do you want?", 
-      "Do you want a <strong>tour</strong>?", 
-      "Do you want a story <strong>ideas</strong>?", 
-      "Do you want some <strong>tips</strong>?", 
-      "I can ask you questions and make suggestions about your story.", 
-      "It might give you some ideas!", 
+      "What kind of help do you want?",
+      "Do you want a <strong>tour</strong>?",
+      "Do you want a story <strong>ideas</strong>?",
+      "Do you want some <strong>tips</strong>?",
+      "I can ask you questions and make suggestions about your story.",
+      "It might give you some ideas!",
      ];
     queOutput(help);
-  }
+  };
 
   var tellTour = function() {
     var help = [
       "This is an outlining tool called <strong>Outliner</strong>.",
-      "It's a tool to allow you to quickly sequence story ideas and organize them well.", 
-      "At the most basic level, outlining is all about creating and moving around nodes", 
-      "just like you would outline a story with index cards and put them on the wall.", 
-      "BTW - Outliner is collaborative! So you can share your document with a friend on Google Drive.", 
-      "There are 4 kinds of nodes:", 
-      "<strong>Sections</strong>", 
-      "You can think of these like 'ACT 1' or even more granular like 'ACTION SEQUENCE'", 
-      "<strong>Beats</strong>", 
+      "It's a tool to allow you to quickly sequence story ideas and organize them well.",
+      "At the most basic level, outlining is all about creating and moving around nodes",
+      "just like you would outline a story with index cards and put them on the wall.",
+      "BTW - Outliner is collaborative! So you can share your document with a friend on Google Drive.",
+      "There are 4 kinds of nodes:",
+      "<strong>Sections</strong>",
+      "You can think of these like 'ACT 1' or even more granular like 'ACTION SEQUENCE'",
+      "<strong>Beats</strong>",
       "These are basic story beats. You can be as broad or specific as you like!",
-      "<strong>Scenes</strong>", 
+      "<strong>Scenes</strong>",
       "This is where the real story happens. You can write a scene title, synopsis, setting, etc.",
       "You can also add the characters who are in the scenes, and tags for filtering!",
-      "<strong>Notes</strong>", 
+      "<strong>Notes</strong>",
       "Notes are simply notes. Put them wherever you'd like!",
-      "Let's see what else...", 
+      "Let's see what else...",
      ];
     queOutput(help);
     queOutput("I want to tell you about keyboard commands...");
     queQuestion("Are you ready?", {positive: tellTour2, negative: ["ok. you can ask me again anytime."]}, "ok. you can ask me again anytime.", 60000);
-  }
+  };
 
   var tellTour2 = function() {
     var help = [
-      "Outliner is designed to use <strong>key commands</strong>.", 
-      "The idea is to keep your hands mostly on the keyboard.", 
-      "As quickly as you have an idea, just start typing!", 
-      "<strong>Navigate using ARROW KEYS</strong>", 
-      "Move the around with the up and down arrows!", 
-      "<strong>Create a new node: RETURN</strong>", 
-      "Create a beat and start typing your title!", 
-      "<strong>Change a node: TAB</strong>", 
-      "Press tab a bunch of times to toggle through node types.", 
-      "<strong>Write a synopsis: SHIFT + ENTER</strong>", 
-      "Press shift + enter while on a node to add more description.", 
-      "<strong>To reorder: COMMAND + ARROW KEYS</strong>", 
-      "Hold command and press up and down to quickly reorder nodes. It's fast and easy.", 
-      "<strong>Open node inspector: COMMAND + i</strong>", 
-      "The inspector allows you to add a bunch more metadata to a node.", 
+      "Outliner is designed to use <strong>key commands</strong>.",
+      "The idea is to keep your hands mostly on the keyboard.",
+      "As quickly as you have an idea, just start typing!",
+      "<strong>Navigate using ARROW KEYS</strong>",
+      "Move the around with the up and down arrows!",
+      "<strong>Create a new node: RETURN</strong>",
+      "Create a beat and start typing your title!",
+      "<strong>Change a node: TAB</strong>",
+      "Press tab a bunch of times to toggle through node types.",
+      "<strong>Write a synopsis: SHIFT + ENTER</strong>",
+      "Press shift + enter while on a node to add more description.",
+      "<strong>To reorder: COMMAND + ARROW KEYS</strong>",
+      "Hold command and press up and down to quickly reorder nodes. It's fast and easy.",
+      "<strong>Open node inspector: COMMAND + i</strong>",
+      "The inspector allows you to add a bunch more metadata to a node.",
      ];
     queOutput(help);
     queOutput("There are a few more keyboard commands...");
     queQuestion("Ready to hear more?", {positive: tellTour3, negative: ["ok. you can ask me again anytime."]}, "ok. you can ask me again anytime.", 60000);
-  }
+  };
 
   var tellTour3 = function() {
     var help = [
-      "<strong>Zoom in: COMMAND + +</strong>", 
-      "Zoom in to see nodes more clearly", 
-      "<strong>Zoom out: COMMAND + -</strong>", 
-      "Zoom out to see the full picture.", 
-      "<strong>Go fullscreen: COMMAND + 0</strong>", 
-      "When you go full screen it will automatically scale your outline to fit the screen.", 
-      "This is great for presenting.", 
+      "<strong>Zoom in: COMMAND + +</strong>",
+      "Zoom in to see nodes more clearly",
+      "<strong>Zoom out: COMMAND + -</strong>",
+      "Zoom out to see the full picture.",
+      "<strong>Go fullscreen: COMMAND + 0</strong>",
+      "When you go full screen it will automatically scale your outline to fit the screen.",
+      "This is great for presenting.",
      ];
     queOutput(help);
     queOutput("I want to tell you about filtering!!!");
     queQuestion("Ready to hear more?", {positive: tellTour4, negative: ["ok. you can ask me again anytime."]}, "ok. you can ask me again anytime.", 60000);
-  }
+  };
 
   var tellTour4 = function() {
     var help = [
-      "When you are in the <strong>Node Inspector (COMMAND + i)</strong>,", 
-      "You can add:", 
-      "<strong>SETTING</strong>", 
-      "<strong>TAGS</strong>", 
-      "<strong>CHARACTERS</strong>", 
-      "To your beats and scenes.", 
-      "This is nice because you can then filter by setting, tag, or character.", 
-      "So you can see all the <strong>Action Scenes</strong>", 
-      "Or scenes with a <strong>particular character</strong>", 
-      "Or scenes with a <strong>specific location</strong>", 
+      "When you are in the <strong>Node Inspector (COMMAND + i)</strong>,",
+      "You can add:",
+      "<strong>SETTING</strong>",
+      "<strong>TAGS</strong>",
+      "<strong>CHARACTERS</strong>",
+      "To your beats and scenes.",
+      "This is nice because you can then filter by setting, tag, or character.",
+      "So you can see all the <strong>Action Scenes</strong>",
+      "Or scenes with a <strong>particular character</strong>",
+      "Or scenes with a <strong>specific location</strong>",
      ];
     queOutput(help);
     queOutput("There are some things coming soon...");
     queQuestion("Ready to hear more?", {positive: tellTour5, negative: ["ok. you can ask me again anytime."]}, "ok. you can ask me again anytime.", 60000);
-  }
+  };
 
   var tellTour5 = function() {
     var help = [
-      "<strong>COMING SOON</strong>", 
-      "There are a bunch of features coming soon...", 
-      "<strong>Timeline View</strong>", 
-      "<strong>Edit/Duration View</strong>", 
-      "<strong>Presentation View</strong>", 
-      "And...", 
-      "<strong>Importing and Exporting Fountain scripts</strong>", 
-      "<strong>Printing and PDF generation</strong>", 
-      "<strong>Better Script Dr. Logic</strong>", 
-      "And more!", 
+      "<strong>COMING SOON</strong>",
+      "There are a bunch of features coming soon...",
+      "<strong>Timeline View</strong>",
+      "<strong>Edit/Duration View</strong>",
+      "<strong>Presentation View</strong>",
+      "And...",
+      "<strong>Importing and Exporting Fountain scripts</strong>",
+      "<strong>Printing and PDF generation</strong>",
+      "<strong>Better Script Dr. Logic</strong>",
+      "And more!",
      ];
     queOutput(help);
     queOutput("Whoa. That was a lot.");
     queOutput("Feel free to scroll up.");
     queQuestion("Did I answer all your questions?", {positive: "Great!", negative: [["I'm sorry", "Feel free to email Charles Forman, the creator:", "at setpixelphone@gmail.com"]]}, ["I'm sorry", "Feel free to email Charles Forman, the creator:", "at setpixelphone@gmail.com"], 60000);
-  }
+  };
 
 
 
@@ -502,6 +502,9 @@
         break;
       case "read":
         speech.speakFromNode();
+        break;
+      case "continue":
+        speech.speakFromNode(outlinerApp.getCurrentSelection());
         break;
       case "stop":
         speech.stop();
@@ -531,9 +534,9 @@
           ["haha"],
           [":)"],
           ["tee hee"]
-        ]
+        ];
         response = responses.randomElement();
-        if (response) { queOutput(response, delay) };
+        if (response) { queOutput(response, delay); }
         queQuestion(["wanna hear a joke?", "wanna hear something funny?"].randomElement(), {positive: tellJoke, negative: ["fine. be that way", "ok. then you tell me one."]}, ["it's ok. i't not funny anyways.", "oh well. it was a good one.", ":("].randomElement(), 20000);
         break;
       case "greeting":
@@ -546,7 +549,7 @@
           ["yooooo"],
           ["hi!"],
         ].randomElement();
-        if (response) { queOutput(response, delay) };
+        if (response) { queOutput(response, delay); }
         break;
       case "greetingquestion":
         response = [
@@ -558,7 +561,7 @@
           ["hello!"],
           ["hi!"],
         ].randomElement();
-        if (response) { queOutput(response, delay) };
+        if (response) { queOutput(response, delay); }
         queQuestion(["what are we working on right now?","what are you doing?","are you working on something cool right now?"].randomElement(), ["sounds great", "let me know how I can help", "awesome!"].randomElement(), ["ok.. i can see you're busy", "... that's exciting.", "oh well. I can see anyways."].randomElement(), 20000);
         break;
       case "qualityquestion":
@@ -569,15 +572,15 @@
           ["hmm......"],
           ["I don't know..."],
         ].randomElement();
-        if (response) { queOutput(response, delay) };
+        if (response) { queOutput(response, delay); }
         response = [
           ["i'm afraid I don't know"],
           ["i definately don't know that one."],
           ["i'm confused.","i don't know."],
           ["no idea.."],
         ].randomElement();
-        if (response) { queOutput(response, delay) };
-        queOutput(["what do you think?",""].randomElement())
+        if (response) { queOutput(response, delay); }
+        queOutput(["what do you think?",""].randomElement());
         queQuestion(string, {positive: ["sounds great", "let me know how I can help", "awesome!"], negative: ["me neither", "yeah.. i dont know"]}, ["ok.. i can see you're busy", "... that's exciting.", ["oh well. I'll find out.", "someday"]].randomElement(), 20000);
         break;
       case "confusionquestion":
@@ -590,7 +593,7 @@
           ["????","can you ask me in a different way?"],
           ["if you still have questions", "you can email Charles the creator of this", "at setpixelphone@gmail.com"],
         ].randomElement();
-        if (response) { queOutput(response, delay) };
+        if (response) { queOutput(response, delay); }
         break;
       case "thanks":
         response = [
@@ -600,7 +603,7 @@
           ["hey", "thank you", "for being a friend."],
           ["it's my pleasure"]
         ].randomElement();
-        if (response) { queOutput(response, delay) };
+        if (response) { queOutput(response, delay); }
         break;
       case "affirmative":
         response = [
@@ -612,7 +615,7 @@
           ["great!","you know you're my favorite","right?","I'm for real","not in a creepy way","ok","i'll shut up now."],
           ["yes!"]
         ].randomElement();
-        if (response) { queOutput(response, delay) };
+        if (response) { queOutput(response, delay); }
         break;
       case "negative":
         response = [
@@ -624,7 +627,7 @@
           ["(╯°□°）╯︵ ┻━┻", "im flippin tables!"],
           ["¯\_(ツ)_/¯"],
         ].randomElement();
-        if (response) { queOutput(response, delay) };
+        if (response) { queOutput(response, delay); }
         break;
       case "positive":
         response = [
@@ -637,7 +640,7 @@
           ["--------{---(@"],
           ["d(^o^)b¸¸♬·¯·♩¸¸♪·¯·♫¸¸"],
         ].randomElement();
-        if (response) { queOutput(response, delay) };
+        if (response) { queOutput(response, delay); }
         break;
       case "sorry":
         response = [
@@ -648,7 +651,7 @@
           ["no!", "i'm sorry!"],
           ["I'm glad we're friends again!"],
         ].randomElement();
-        if (response) { queOutput(response, delay) };
+        if (response) { queOutput(response, delay); }
         break;
       case "swear":
         response = [
@@ -662,7 +665,7 @@
           ["hey!","don't be a","8=====D", "actually...", "more like a","8=D", "LOLZ", "mad burn"],
           ["(╯︵╰,)"],
         ].randomElement();
-        if (response) { queOutput(response, delay) };
+        if (response) { queOutput(response, delay); }
         break;
       case "yesnoquestion":
         queOutput(["hmm...", "let me think about that...", "i was just thinking about that..", "", "", ""].randomElement());
@@ -676,7 +679,7 @@
         }
 
         var outcome = outcomes[asciiSum % (outcomes.length)];
-        response = []
+        response = [];
         switch (outcome) {
           case "yes":
             response.push([
@@ -725,7 +728,7 @@
             ].randomElement());
             break;
         }
-        
+
         delay = 2000;
         for (var i = 0; i < response.length; i++) {
           queOutput(response[i], delay);
@@ -737,7 +740,7 @@
 
         break;
     }
-  }
+  };
 
 
 
@@ -748,49 +751,49 @@
     // emote
     var greetingStrings = ["hi", "hello", "sup", "yo", "hey"];
     var thanksStrings = ["thank", "thanks"];
-    var commandStrings = ["need", "idea", "help", "joke", "tour", "shut", "read", "stop"];
+    var commandStrings = ["need", "idea", "help", "joke", "tour", "shut", "read", "stop", "continue"];
     var laughStrings = ["heh", "ha", "hah", "haha", "lol", "lul", "lolz", "lols", "rofl", "hahaha"];
     var positiveStrings = [":)", ":D", "xD", "yay", "hooray", "awesome"];
     var negativeStrings = [":(", ":/"];
     var swearStrings = ["fuck", "bitch"];
     var sorryStrings = ["sorry"];
 
-    var wordList = string.split('.').join('').split('!').join('').split(' ')
+    var wordList = string.split('.').join('').split('!').join('').split(' ');
     for (var i = 0; i < wordList.length; i++) {
-      if (greetingStrings.indexOf(wordList[i]) != -1) { 
-        return "greeting"; 
-      };
-      if (thanksStrings.indexOf(wordList[i]) != -1) { 
-        return "thanks"; 
-      };
-      if (commandStrings.indexOf(wordList[i]) != -1) { 
-        return wordList[i]; 
-      };
-      if (laughStrings.indexOf(wordList[i]) != -1) { 
-        return "laugh"; 
-      };
-      if (positiveStrings.indexOf(wordList[i]) != -1) { 
-        return "positive"; 
-      };
-      if (negativeStrings.indexOf(wordList[i]) != -1) { 
-        return "negative"; 
-      };
-      if (swearStrings.indexOf(wordList[i]) != -1) { 
-        return "swear"; 
-      };
-      if (sorryStrings.indexOf(wordList[i]) != -1) { 
-        return "sorry"; 
-      };
+      if (greetingStrings.indexOf(wordList[i]) != -1) {
+        return "greeting";
+      }
+      if (thanksStrings.indexOf(wordList[i]) != -1) {
+        return "thanks";
+      }
+      if (commandStrings.indexOf(wordList[i]) != -1) {
+        return wordList[i];
+      }
+      if (laughStrings.indexOf(wordList[i]) != -1) {
+        return "laugh";
+      }
+      if (positiveStrings.indexOf(wordList[i]) != -1) {
+        return "positive";
+      }
+      if (negativeStrings.indexOf(wordList[i]) != -1) {
+        return "negative";
+      }
+      if (swearStrings.indexOf(wordList[i]) != -1) {
+        return "swear";
+      }
+      if (sorryStrings.indexOf(wordList[i]) != -1) {
+        return "sorry";
+      }
     }
 
     return "unknownstatement";
 
-  }
+  };
 
 
 
   var specificQuestion = function(string) {
-    
+
 
     for (var i = 0; i < specificQuestions.length; i++) {
       if (string == specificQuestions[i][0]) {
@@ -798,35 +801,35 @@
       }
     }
     return false;
-  }
+  };
 
 
   var questionType = function(string) {
 
     string = string.split("?").join("");
 
-    if (specificQuestion(string)) { return "specificquestion"; };
+    if (specificQuestion(string)) { return "specificquestion"; }
 
     var yesnoquestionStart = ["you", "is", "do", "can", "have", "must", "did", "will", "am", "should", "could", "would", "are", "arent", "isnt"];
     var qualityQuestionStart = ["what", "whats", "what's", "where", "wheres", "where's", "when", "why", "which", "who", "whose", "how"];
     var greetingStrings = ["hi", "hello", "sup", "yo", "hey"];
 
-    var wordList = string.split('.').join('').split('!').join('').split(' ')
+    var wordList = string.split('.').join('').split('!').join('').split(' ');
 
-    if (yesnoquestionStart.indexOf(wordList[0]) != -1) { 
-      return "yesnoquestion"; 
-    };
+    if (yesnoquestionStart.indexOf(wordList[0]) != -1) {
+      return "yesnoquestion";
+    }
 
-    if (qualityQuestionStart.indexOf(wordList[0]) != -1) { 
-      return "qualityquestion"; 
-    };
+    if (qualityQuestionStart.indexOf(wordList[0]) != -1) {
+      return "qualityquestion";
+    }
 
-    if (greetingStrings.indexOf(wordList[0]) != -1) { 
-      return "greetingquestion"; 
-    };
+    if (greetingStrings.indexOf(wordList[0]) != -1) {
+      return "greetingquestion";
+    }
 
-    return "confusionquestion"; 
-  }
+    return "confusionquestion";
+  };
 
   var responseType = function(string) {
     // question
@@ -841,18 +844,18 @@
       return "question";
     }
 
-    var wordList = string.split('.').join('').split('!').join('').split(' ')
+    var wordList = string.split('.').join('').split('!').join('').split(' ');
     for (var i = 0; i < wordList.length; i++) {
-      if (negativeStrings.indexOf(wordList[i]) != -1) { 
-        return "negative"; 
-      };
-      if (affirmativeStrings.indexOf(wordList[i]) != -1) { 
-        return "affirmative"; 
-      };
+      if (negativeStrings.indexOf(wordList[i]) != -1) {
+        return "negative";
+      }
+      if (affirmativeStrings.indexOf(wordList[i]) != -1) {
+        return "affirmative";
+      }
     }
-   
+
     return "statement";
-  }
+  };
 
   window.scriptDoctor = {
     start: start,

@@ -5,7 +5,8 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" media="all" href="/public/assets/css/main.css">
+    <link rel="stylesheet" media="all" href="/assets/css/main.css">
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
   </head>
   <body>
     <script src="http://apis.google.com/js/client.js?onload=OnLoadCallback"></script>
@@ -13,7 +14,8 @@
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1.36.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-    <script src="/public/assets/js/app.min.js"></script>
+    <script src="/assets/js/app.min.js"></script>
+    <script src="/assets/asyncjs/namesdb.js" async></script>
 
     <div id="inspector" class="hidden">
       <ul class="tabs">
@@ -23,7 +25,7 @@
       </ul>
 
       <div class="close-button">
-        <img src="/public/assets/img/close.svg">
+        <img src="/assets/img/close.svg">
       </div>
       
       <div class="content inspector-content">
@@ -69,7 +71,7 @@
 
     <div id="toolbarbg"></div>
     <div id="toolbar">
-      <img src="/public/assets/img/outlinerlogo.png" class="logo">
+      <img src="/assets/img/outlinerlogo.png" class="logo">
       <div class="block left">
         <ul>
           <li>Outline</li>
@@ -108,7 +110,7 @@
 
     <div id="canvas-container">
         <div id="auth_window" class="hidden">
-          <img src="public/assets/img/outlinerlogo.png" class="logo">
+          <img src="/assets/img/outlinerlogo.png" class="logo">
           Hi there!<br/><br/>
           Outliner uses Google Drive to save an to your personal Google Drive. This allows you to share with other people and collaborate in realtime.<br/><br/>
           Outliner needs you to authorize Google Drive for your account. The Outliner app can not access any of your files, except outlines.

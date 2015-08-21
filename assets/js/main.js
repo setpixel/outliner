@@ -178,7 +178,7 @@ import "./stats";
 import "./realtimeModel";
 import "./awsuploader";
 import "./circlebob";
-import "./namesdb";
+// import "./namesdb";
 
 ;(function() {
   'use strict';

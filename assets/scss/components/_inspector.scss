@@ -133,9 +133,7 @@
   padding: -30px;
   margin-bottom: 20px;
   height: 40px;
-  appearance: none;
-/*  background: url(http://www.stackoverflow.com/favicon.ico) 96% / 15% no-repeat #eee;
-*/}
+}
 
 #inspector .filter-item {
   font-size: 14px;
@@ -164,7 +162,6 @@
 #inspector .filter-item.not-selected {
   opacity: 0.4;
 }
-
 
 #inspector .item-count {
   color: rgba(0,0,0,0.6);

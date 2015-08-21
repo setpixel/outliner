@@ -2,7 +2,7 @@
   'use strict';
  
   var utterance;
-  window.speechSynthesis.getVoices()
+  window.speechSynthesis.getVoices();
 	
 	var currentNode = 0;
 	var textToSpeak;
@@ -19,7 +19,7 @@
 
 	var speakFromNode = function(nodeNumber) {
 		speechBuffer = "";
-		if (!utterance) { initUtterance(); };
+		if (!utterance) { initUtterance(); }
 
 		if (nodeNumber) {
 			currentNode = nodeNumber;
@@ -29,7 +29,7 @@
 
 		textToSpeak = [];
 
-		var nodes = realtimeModel.outlineNodesAsArray()
+		var nodes = realtimeModel.outlineNodesAsArray();
     for (var i = 0; i < nodes.length; i++) {
     	var text = "";
     	if (nodes[i].title) {
@@ -64,7 +64,7 @@
 	};
 
 	var playNodeText = function() {
-		var txt = textToSpeak[currentNode][1]
+		var txt = textToSpeak[currentNode][1];
 
     var chunkLength = 260;
     var pattRegex = new RegExp('^[\\s\\S]{' + Math.floor(chunkLength / 2) + ',' + chunkLength + '}[.!?,]{1}|^[\\s\\S]{1,' + chunkLength + '}$|^[\\s\\S]{1,' + chunkLength + '} ');
@@ -93,7 +93,7 @@
     	if (speechSynthesis.speaking) {
     		return false;
     	}
-    	if (!utterance) { initUtterance(); };
+    	if (!utterance) { initUtterance(); }
 	    var chunkLength = 260;
 	    var pattRegex = new RegExp('^[\\s\\S]{' + Math.floor(chunkLength / 2) + ',' + chunkLength + '}[.!?,]{1}|^[\\s\\S]{1,' + chunkLength + '}$|^[\\s\\S]{1,' + chunkLength + '} ');
 	    var chunkArr = speechBuffer.match(pattRegex);

@@ -165,6 +165,7 @@
     Do beats have a type? Character or Plot?
 */
 
+import "./testPDF";
 import "./speech";
 import "./contextmenu";
 import "./awesomplete";

@@ -178,6 +178,7 @@ import "./stats";
 import "./realtimeModel";
 import "./awsuploader";
 import "./circlebob";
+import "./outlinerprint";
 // import "./namesdb";
 
 ;(function() {

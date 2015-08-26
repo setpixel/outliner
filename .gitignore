@@ -5,3 +5,4 @@ public/
 tmp/
 config/awsconfig.json
 .awspublish-outliner.setpixel.com
+npm-debug.log

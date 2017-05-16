@@ -165,7 +165,6 @@
     Do beats have a type? Character or Plot?
 */
 
-import "./testPDF";
 import "./speech";
 import "./contextmenu";
 import "./awesomplete";
@@ -211,14 +210,14 @@ import "./outlinerprint";
       attachEventListenersToNode(outlineNodes.get(i).id)
     }
 
-    reflowScreen();
-    setTimeout(reflowScreen, 200);
-    setTimeout(reflowScreen, 600);
+    // reflowScreen();
+    // setTimeout(reflowScreen, 200);
+    // setTimeout(reflowScreen, 600);
     
     selectedItem = 1;
     selectItem();
 
-    changeScale(1);
+    //changeScale(1);
 
     attachEventListenersToInspector();
   };
@@ -240,14 +239,13 @@ import "./outlinerprint";
   var attachEventListenersToNode = function(nodeID) {
     setTimeout(function() {
 
-      reflowScreen();
-
-      setTimeout(reflowScreen, 100);
+      // reflowScreen();
+      // setTimeout(reflowScreen, 100);
 
 
       $("#" + nodeID + " img").load(function(){
         console.log("image loaded!!!");
-        reflowScreen();
+        //reflowScreen();
       });
 
       $("#" + nodeID + " .title").on("input", function(event) {

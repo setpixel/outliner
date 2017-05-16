@@ -19,7 +19,8 @@ gulp.task('browser-sync', ['styles'], function() {
 		port: 8000,
 		server: {
 			baseDir: parameters.web_path
-		}
+		},
+		open: false
 	});
 });
 
@@ -72,7 +73,7 @@ gulp.task('minify', ['vendor', 'babel'], function() {
 	return gulp.src([parameters.tmp_path + '/js/vendor.js', parameters.tmp_path + '/js/main.js'])
 	.pipe($.sourcemaps.init())
 	.pipe($.concat('app.min.js'))
-	// .pipe($.uglify())
+	//.pipe($.uglify())
 	.pipe($.sourcemaps.write('.'))
 	.pipe(gulp.dest(parameters.web_path + '/assets/js'));
 });

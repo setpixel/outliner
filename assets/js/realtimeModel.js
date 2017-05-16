@@ -22,6 +22,8 @@ TODO
 
   var indices = {};
 
+  var documentTitle;
+
   authorize();
 
   function authorize() {
@@ -46,6 +48,15 @@ TODO
     }, false);
   };
 
+  function printFile(fileId) {
+    var request = gapi.client.drive.files.get({
+      'fileId': fileId
+    });
+    request.execute(function(resp) {
+      documentTitle = resp.title;
+    });
+  }
+
   function start() {
     registerCustomTypes();
 
@@ -61,6 +72,10 @@ TODO
       // Load the document id from the URL
       documentID = id.replace('/', '');
       realtimeUtils.load(id.replace('/', ''), onFileLoaded, onFileInitialize);
+      window.gapi.client.load('drive', 'v2', function() {
+        printFile(documentID)
+      });
+
     } else {
       // Create a new document, add it to the URL
       window.gapi.client.load('drive', 'v2', function() {
@@ -507,6 +522,7 @@ TODO
     document: function(){ return document;},
     docModel: function(){ return docModel;},
     docRoot: function(){ return docRoot;},
+    docTitle: function(){ return documentTitle;},
     getID: function(){ return documentID; },
     getIndex: function(index) { return indices[index]; }
   };

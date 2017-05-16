@@ -17,3 +17,7 @@
 #canvas-container::-webkit-scrollbar {
 	display: none;
 }
+
+canvas img {
+	image-rendering: auto;
+}
